@@ -28,19 +28,37 @@ const STORE_DATA = {
         { q: 'Какие способы оплаты доступны?', a: 'Мы принимаем наличные при получении, онлайн-оплату картой МИР и оплату через СБП (Система быстрых платежей).' },
         { q: 'Как осуществляется доставка?', a: 'Мы отправляем заказы Почтой России и СДЭК. Сроки доставки зависят от региона: от 1-2 дней по Чите до 7-14 дней в отдалённые регионы.' },
         { q: 'Есть ли бесплатная доставка?', a: 'Да, при заказе от 5 000 ₽ доставка по России бесплатная!' },
-        { q: 'Как вернуть товар?', a: 'Вы можете вернуть ткань в течение 14 дней, если она не была разрезана. Фурнитура возврату не подлежит. Подробнее в разделе \"Возврат и обмен\".' },
+        { q: 'Как вернуть товар?', a: 'Вы можете вернуть ткань в течение 14 дней, если она не была разрезана. Фурнитура возврату не подлежит. Подробнее в разделе \\\"Возврат и обмен\\\".' },
         { q: 'Можно ли заказать отрез нужной длины?', a: 'Да, вы можете заказать ткань любой длины от 0,5 метра. Цена указана за 1 метр.' },
         { q: 'Как узнать о новинках?', a: 'Подпишитесь на нашу рассылку на главной странице или следите за новостями в блоге.' },
         { q: 'Работаете ли вы с юридическими лицами?', a: 'Да, мы работаем с ИП и юридическими лицами. Для оформления заказа свяжитесь с нами по телефону.' }
     ]
 };
 
-// ===== CUSTOM PRODUCTS PERSISTENCE =====
-// IDs товаров, которые идут по умолчанию (не удаляем и не перезаписываем)
+// ===== CLOUD API =====
+const API_BASE_URL = 'https://functions.yandexcloud.net/d4enevddtsdl324s0314';
 const DEFAULT_PRODUCT_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12','p13','p14','p15','p16'];
 
-// Загрузить пользовательские товары из localStorage
-function loadCustomProducts() {
+// Загрузить пользовательские товары из облака (с fallback на localStorage)
+async function loadCustomProducts() {
+    try {
+        const response = await fetch(API_BASE_URL + '/products');
+        if (response.ok) {
+            const data = await response.json();
+            const customProducts = data.customProducts || [];
+            localStorage.setItem('matreshka_products', JSON.stringify(customProducts));
+            const existingIds = STORE_DATA.products.map(p => p.id);
+            customProducts.forEach(p => {
+                if (!existingIds.includes(p.id)) {
+                    STORE_DATA.products.push(p);
+                }
+            });
+            console.log('☁️ Загружено товаров из облака:', customProducts.length);
+            return;
+        }
+    } catch (e) {
+        console.warn('☁️ Ошибка загрузки из облака, пробуем localStorage:', e.message);
+    }
     try {
         const saved = localStorage.getItem('matreshka_products');
         if (saved) {
@@ -57,10 +75,51 @@ function loadCustomProducts() {
     }
 }
 
-// Сохранить пользовательские товары в localStorage
-function saveCustomProducts() {
+// Сохранить пользовательские товары в облако и localStorage
+async function saveCustomProducts() {
     const customProducts = STORE_DATA.products.filter(p => !DEFAULT_PRODUCT_IDS.includes(p.id));
     localStorage.setItem('matreshka_products', JSON.stringify(customProducts));
+    for (const product of customProducts) {
+        try {
+            const checkResponse = await fetch(API_BASE_URL + '/products');
+            if (checkResponse.ok) {
+                const data = await checkResponse.json();
+                const existing = (data.customProducts || []).find(p => p.id === product.id);
+                if (existing) {
+                    await fetch(API_BASE_URL + '/products/' + product.id, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product })
+                    });
+                } else {
+                    await fetch(API_BASE_URL + '/products', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product })
+                    });
+                }
+            }
+        } catch (e) {
+            console.warn('☁️ Ошибка синхронизации товара:', product.name, e.message);
+        }
+    }
+    try {
+        const checkResponse = await fetch(API_BASE_URL + '/products');
+        if (checkResponse.ok) {
+            const data = await checkResponse.json();
+            const cloudProducts = data.customProducts || [];
+            const localIds = customProducts.map(p => p.id);
+            for (const cloudProduct of cloudProducts) {
+                if (!localIds.includes(cloudProduct.id)) {
+                    await fetch(API_BASE_URL + '/products/' + cloudProduct.id, {
+                        method: 'DELETE'
+                    });
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('☁️ Ошибка очистки удалённых товаров:', e.message);
+    }
 }
 
 // ===== STATE =====
@@ -96,25 +155,19 @@ function saveState() {
 
 // ===== NAVIGATION =====
 function navigateTo(page) {
-    // Hide all pages
     document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-    // Show target page
     const target = document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1));
     if (target) {
         target.style.display = 'block';
         state.currentPage = page;
     }
-    // Update nav
     document.querySelectorAll('.nav-list a').forEach(a => {
         a.classList.toggle('active', a.dataset.page === page);
     });
-    // Close modals
     closeCart();
     closeAuthModal();
-    // Render if needed
     if (page === 'catalog') renderCatalog();
     if (page === 'profile') renderProfile();
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -146,12 +199,10 @@ function showAuthTab(tab) {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const tabs = document.querySelectorAll('.auth-tab');
-
     tabs.forEach(t => {
         t.style.background = t.dataset.tab === tab ? 'var(--primary)' : 'var(--gray-100)';
         t.style.color = t.dataset.tab === tab ? 'var(--white)' : 'var(--gray-700)';
     });
-
     if (tab === 'login') {
         loginForm.style.display = 'block';
         registerForm.style.display = 'none';
@@ -168,7 +219,6 @@ function handleRegister(e) {
     const phone = form.querySelector('[name="regPhone"]').value.trim();
     const password = form.querySelector('[name="regPassword"]').value;
     const confirm = form.querySelector('[name="regConfirm"]').value;
-
     if (!name || !phone || !password) {
         showToast('Пожалуйста, заполните все поля', 'error');
         return;
@@ -181,17 +231,14 @@ function handleRegister(e) {
         showToast('Пароли не совпадают', 'error');
         return;
     }
-
     const users = JSON.parse(localStorage.getItem('matreshka_users') || '[]');
     if (users.find(u => u.phone === phone)) {
         showToast('Пользователь с таким телефоном уже зарегистрирован', 'error');
         return;
     }
-
     const user = { id: 'u' + Date.now(), name, phone, password, bonus: 0, addresses: [] };
     users.push(user);
     localStorage.setItem('matreshka_users', JSON.stringify(users));
-
     state.user = { id: user.id, name: user.name, phone: user.phone, bonus: user.bonus, addresses: user.addresses };
     saveState();
     updateUI();
@@ -204,20 +251,16 @@ function handleLogin(e) {
     const form = e.target;
     const phone = form.querySelector('[name="loginPhone"]').value.trim();
     const password = form.querySelector('[name="loginPassword"]').value;
-
     if (!phone || !password) {
         showToast('Пожалуйста, заполните все поля', 'error');
         return;
     }
-
     const users = JSON.parse(localStorage.getItem('matreshka_users') || '[]');
     const user = users.find(u => u.phone === phone && u.password === password);
-
     if (!user) {
         showToast('Неверный телефон или пароль', 'error');
         return;
     }
-
     state.user = { id: user.id, name: user.name, phone: user.phone, bonus: user.bonus || 0, addresses: user.addresses || [] };
     saveState();
     updateUI();
@@ -252,7 +295,6 @@ function closeCart() {
 function addToCart(productId) {
     const product = STORE_DATA.products.find(p => p.id === productId);
     if (!product) return;
-
     const existing = state.cart.find(item => item.id === productId);
     if (existing) {
         existing.qty += 1;
@@ -288,13 +330,11 @@ function updateCartQty(productId, delta) {
 function renderCart() {
     const container = document.getElementById('cartItems');
     const totalEl = document.getElementById('cartTotal');
-
     if (state.cart.length === 0) {
         container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-500)"><div style="font-size:48px;margin-bottom:16px">🛒</div><p>Корзина пуста</p></div>';
         totalEl.textContent = '0 ₽';
         return;
     }
-
     let total = 0;
     container.innerHTML = state.cart.map(item => {
         const product = STORE_DATA.products.find(p => p.id === item.id);
@@ -317,7 +357,6 @@ function renderCart() {
             </div>
         `;
     }).join('');
-
     totalEl.textContent = total.toLocaleString() + ' ₽';
 }
 
@@ -350,9 +389,7 @@ function renderCheckout() {
             <span style="font-weight:600">${subtotal.toLocaleString()} ₽</span>
         </div>`;
     }).join('');
-
     const freeDelivery = total >= 5000;
-
     container.innerHTML = `
         <div class="checkout-layout">
             <div>
@@ -367,7 +404,6 @@ function renderCheckout() {
                         ${freeDelivery ? '🎉 <strong style="color:var(--success)">Бесплатная доставка!</strong> (при заказе от 5 000 ₽)' : '🚚 Доставка от 300 ₽ (бесплатно от 5 000 ₽)'}
                     </div>
                 </div>
-
                 <div class="checkout-section">
                     <h3>📍 Адрес доставки</h3>
                     <div class="form-group">
@@ -389,7 +425,6 @@ function renderCheckout() {
                         <input type="text" id="checkoutIndex" placeholder="Индекс">
                     </div>
                 </div>
-
                 <div class="checkout-section">
                     <h3>🚚 Способ доставки</h3>
                     <div class="payment-options">
@@ -403,7 +438,6 @@ function renderCheckout() {
                         </label>
                     </div>
                 </div>
-
                 <div class="checkout-section">
                     <h3>💳 Способ оплаты</h3>
                     <div class="payment-options">
@@ -421,7 +455,6 @@ function renderCheckout() {
                         </label>
                     </div>
                 </div>
-
                 <div class="checkout-section">
                     <h3>📝 Комментарий к заказу</h3>
                     <div class="form-group">
@@ -429,7 +462,6 @@ function renderCheckout() {
                     </div>
                 </div>
             </div>
-
             <div>
                 <div class="checkout-section" style="position:sticky;top:150px">
                     <h3>✅ Подтверждение заказа</h3>
@@ -457,8 +489,6 @@ function renderCheckout() {
             </div>
         </div>
     `;
-
-    // Payment option click handler
     document.querySelectorAll('.payment-option').forEach(opt => {
         opt.addEventListener('click', function() {
             this.querySelector('input[type="radio"]').checked = true;
@@ -476,18 +506,15 @@ function placeOrder() {
     const deliveryMethod = document.querySelector('input[name="deliveryMethod"]:checked')?.value || 'pochta';
     const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cash';
     const comment = document.getElementById('checkoutComment')?.value || '';
-
     if (!street || !house) {
         showToast('Пожалуйста, заполните адрес доставки', 'error');
         return;
     }
-
     let total = 0;
     state.cart.forEach(item => {
         const product = STORE_DATA.products.find(p => p.id === item.id);
         if (product) total += product.price * item.qty;
     });
-
     const order = {
         id: 'ORD-' + Date.now(),
         date: new Date().toISOString(),
@@ -500,15 +527,12 @@ function placeOrder() {
         comment: comment,
         status: 'new'
     };
-
     const orders = JSON.parse(localStorage.getItem('matreshka_orders') || '[]');
     orders.push(order);
     localStorage.setItem('matreshka_orders', JSON.stringify(orders));
-
     state.cart = [];
     saveState();
     updateUI();
-
     showToast('✅ Заказ #' + order.id + ' оформлен!', 'success');
     navigateTo('profile');
     renderProfile();
@@ -521,12 +545,10 @@ function renderProfile() {
         openAuthModal('login');
         return;
     }
-
     document.getElementById('profileAvatar').textContent = state.user.name.charAt(0).toUpperCase();
     document.getElementById('profileName').textContent = state.user.name;
     document.getElementById('profilePhone').textContent = state.user.phone;
     document.getElementById('profileBonus').textContent = state.user.bonus || 0;
-
     renderProfileOrders();
     renderProfileWishlist();
     renderProfileAddresses();
@@ -535,11 +557,9 @@ function renderProfile() {
 function showProfileTab(tab) {
     document.querySelectorAll('.profile-tab').forEach(t => t.style.display = 'none');
     document.querySelectorAll('.profile-nav-item').forEach(i => i.classList.remove('active'));
-
     const tabMap = { orders: 'profileTabOrders', wishlist: 'profileTabWishlist', addresses: 'profileTabAddresses', settings: 'profileTabSettings' };
     const el = document.getElementById(tabMap[tab]);
     if (el) el.style.display = 'block';
-
     document.querySelector(`.profile-nav-item[data-profile-tab="${tab}"]`)?.classList.add('active');
 }
 
@@ -547,14 +567,11 @@ function renderProfileOrders() {
     const container = document.getElementById('profileOrders');
     const orders = JSON.parse(localStorage.getItem('matreshka_orders') || '[]');
     const userOrders = orders.filter(o => o.user?.id === state.user?.id);
-
     if (userOrders.length === 0) {
         container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-500)"><div style="font-size:48px;margin-bottom:16px">📋</div><p>У вас пока нет заказов</p></div>';
         return;
     }
-
     const statusLabels = { new: 'Новый', processing: 'В обработке', shipped: 'Отправлен', delivered: 'Доставлен', cancelled: 'Отменён' };
-
     container.innerHTML = `
         <table class="orders-table">
             <thead>
@@ -587,12 +604,10 @@ function renderProfileOrders() {
 function renderProfileWishlist() {
     const container = document.getElementById('profileWishlist');
     const wishlistProducts = STORE_DATA.products.filter(p => state.wishlist.includes(p.id));
-
     if (wishlistProducts.length === 0) {
         container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-500)"><div style="font-size:48px;margin-bottom:16px">❤️</div><p>В избранном пока нет товаров</p></div>';
         return;
     }
-
     container.innerHTML = `
         <div class="products-grid">
             ${wishlistProducts.map(p => `
@@ -619,12 +634,10 @@ function renderProfileWishlist() {
 function renderProfileAddresses() {
     const container = document.getElementById('profileAddresses');
     const addresses = state.user?.addresses || [];
-
     if (addresses.length === 0) {
         container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-500)"><p>Адреса не добавлены</p></div>';
         return;
     }
-
     container.innerHTML = addresses.map((addr, i) => `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--gray-50);border-radius:var(--radius-sm);margin-bottom:8px">
             <span>📍 ${addr.city}, ${addr.street}, ${addr.house}</span>
@@ -640,7 +653,6 @@ function addAddress() {
     if (!street) return;
     const house = prompt('Введите дом/квартиру:');
     if (!house) return;
-
     if (!state.user.addresses) state.user.addresses = [];
     state.user.addresses.push({ city, street, house });
     saveState();
@@ -675,35 +687,25 @@ function renderCatalog() {
     const grid = document.getElementById('catalogGrid');
     const count = document.getElementById('catalogCount');
     if (!grid) return;
-
     let products = [...STORE_DATA.products];
-
-    // Filter by category
     if (state.currentCategory && state.currentCategory !== 'all') {
         products = products.filter(p => p.category === state.currentCategory);
     }
-
-    // Filter by price
     const priceMin = document.getElementById('priceMin');
     const priceMax = document.getElementById('priceMax');
     if (priceMin && priceMin.value) products = products.filter(p => p.price >= Number(priceMin.value));
     if (priceMax && priceMax.value) products = products.filter(p => p.price <= Number(priceMax.value));
-
-    // Sort
     switch (state.currentSort) {
         case 'price-asc': products.sort((a, b) => a.price - b.price); break;
         case 'price-desc': products.sort((a, b) => b.price - a.price); break;
         case 'new': products.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0)); break;
         default: products.sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0));
     }
-
     count.textContent = 'Найдено: ' + products.length + ' товаров';
-
     if (products.length === 0) {
         grid.innerHTML = '<div style="text-align:center;padding:60px;color:var(--gray-500);grid-column:1/-1"><div style="font-size:64px;margin-bottom:16px">🔍</div><p>Товары не найдены. Попробуйте изменить фильтры.</p></div>';
         return;
     }
-
     grid.innerHTML = products.map(p => `
         <div class="product-card">
             ${p.isNew ? '<span class="product-badge new">Новинка</span>' : ''}
@@ -742,7 +744,6 @@ function applyFilters() {
 function openProductDetail(productId) {
     const product = STORE_DATA.products.find(p => p.id === productId);
     if (!product) return;
-
     const container = document.getElementById('productDetailContent');
     container.innerHTML = `
         <div class="product-detail-layout">
@@ -774,7 +775,6 @@ function openProductDetail(productId) {
             </div>
         </div>
     `;
-
     document.getElementById('productModal').classList.add('active');
     window._detailProductId = productId;
     window._detailQty = 1;
@@ -790,7 +790,6 @@ function addToCartFromDetail(productId) {
     const qty = window._detailQty || 1;
     const product = STORE_DATA.products.find(p => p.id === productId);
     if (!product) return;
-
     const existing = state.cart.find(item => item.id === productId);
     if (existing) {
         existing.qty += qty;
@@ -812,9 +811,7 @@ function closeProductModal() {
 function renderPopularProducts() {
     const container = document.getElementById('productsGrid');
     if (!container) return;
-
     const popular = STORE_DATA.products.filter(p => p.isPopular).slice(0, 8);
-
     container.innerHTML = popular.map(p => `
         <div class="product-card">
             ${p.isNew ? '<span class="product-badge new">Новинка</span>' : ''}
@@ -842,7 +839,6 @@ function renderPopularProducts() {
 function renderFAQ() {
     const container = document.getElementById('faqList');
     if (!container) return;
-
     container.innerHTML = STORE_DATA.faq.map((item, i) => `
         <div style="background:var(--white);border-radius:var(--radius-md);border:1px solid var(--gray-200);margin-bottom:12px;overflow:hidden">
             <button onclick="toggleFAQ(${i})" style="width:100%;padding:16px 20px;background:none;text-align:left;font-size:16px;font-weight:600;display:flex;justify-content:space-between;align-items:center;border:none;cursor:pointer">
@@ -860,7 +856,6 @@ function toggleFAQ(index) {
     const answer = document.getElementById('faqAnswer' + index);
     const icon = document.getElementById('faqIcon' + index);
     if (!answer) return;
-
     if (answer.style.maxHeight && answer.style.maxHeight !== '0px') {
         answer.style.maxHeight = '0';
         if (icon) icon.textContent = '▼';
@@ -878,27 +873,22 @@ function handleSearch(e) {
         showToast('Введите поисковый запрос', 'info');
         return;
     }
-
     const results = STORE_DATA.products.filter(p =>
         p.name.toLowerCase().includes(query) ||
         p.categoryName.toLowerCase().includes(query) ||
         (p.composition && p.composition.toLowerCase().includes(query)) ||
         (p.type && p.type.toLowerCase().includes(query))
     );
-
     if (results.length === 0) {
         showToast('Ничего не найдено по запросу "' + query + '"', 'info');
         navigateTo('catalog');
         return;
     }
-
     state.currentCategory = 'all';
     navigateTo('catalog');
-
     const grid = document.getElementById('catalogGrid');
     const count = document.getElementById('catalogCount');
     count.textContent = 'Найдено: ' + results.length + ' товаров по запросу "' + query + '"';
-
     grid.innerHTML = results.map(p => `
         <div class="product-card">
             ${p.isNew ? '<span class="product-badge new">Новинка</span>' : ''}
@@ -928,15 +918,12 @@ function calculateDelivery() {
     const weight = parseFloat(document.getElementById('calcWeight')?.value) || 1;
     const total = parseFloat(document.getElementById('calcTotal')?.value) || 0;
     const result = document.getElementById('deliveryResult');
-
     if (total >= 5000) {
         result.innerHTML = '<div class="delivery-result"><p class="free">🎉 Бесплатная доставка!</p><p style="color:var(--gray-500);font-size:14px">При заказе от 5 000 ₽ доставка по России бесплатно</p></div>';
         return;
     }
-
     const pochtaPrice = Math.round(300 + weight * 50);
     const sdekPrice = Math.round(400 + weight * 70);
-
     result.innerHTML = `
         <div class="delivery-result">
             <h4 style="margin-bottom:12px">📮 Почта России</h4>
@@ -964,22 +951,19 @@ function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const text = input.value.trim();
     if (!text) return;
-
     const messages = document.getElementById('chatMessages');
     messages.innerHTML += '<div class="chat-msg user">' + text + '</div>';
     input.value = '';
-
     setTimeout(() => {
         const responses = [
             'Спасибо за ваш вопрос! Наш менеджер скоро ответит вам.',
             'Отличный выбор! Если нужна помощь с выбором — обращайтесь.',
             'Мы уже обрабатываем ваш запрос. Ожидайте ответа в ближайшее время.',
-            'Благодарим за обращение! В рабочее время отвечаем в течение часа.'
+            'Благодарим за обращение! В рабочее время отвечаем в те��ение часа.'
         ];
         messages.innerHTML += '<div class="chat-msg support">' + responses[Math.floor(Math.random() * responses.length)] + '</div>';
         messages.scrollTop = messages.scrollHeight;
     }, 1000);
-
     messages.scrollTop = messages.scrollHeight;
 }
 
@@ -989,7 +973,6 @@ function openAdminMenu() {
     dropdown.classList.toggle('active');
 }
 
-// Close admin dropdown on click outside
 document.addEventListener('click', function(e) {
     const menu = document.querySelector('.three-dots-menu');
     const dropdown = document.getElementById('adminDropdown');
@@ -1038,13 +1021,10 @@ function closeAdmin() {
 function showAdminTab(tab) {
     document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
     document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-
     const tabMap = { products: 'adminTabProducts', orders: 'adminTabOrders' };
     const el = document.getElementById(tabMap[tab]);
     if (el) el.style.display = 'block';
-
     document.querySelector(`.admin-tab[data-admin-tab="${tab}"]`)?.classList.add('active');
-
     if (tab === 'products') renderAdminProducts();
     if (tab === 'orders') renderAdminOrders();
 }
@@ -1053,7 +1033,6 @@ function showAdminTab(tab) {
 function renderAdminProducts() {
     const container = document.getElementById('adminProductsList');
     if (!container) return;
-
     container.innerHTML = STORE_DATA.products.map((p, index) => `
         <div class="admin-product-card">
             <div class="product-image">${p.image}</div>
@@ -1088,7 +1067,6 @@ function editProduct(index) {
     form.style.display = 'block';
     form.querySelector('h4').textContent = 'Редактировать товар';
     form.querySelector('form').dataset.editIndex = index;
-
     form.querySelector('[name="pName"]').value = product.name;
     form.querySelector('[name="pCategory"]').value = product.category;
     form.querySelector('[name="pPrice"]').value = product.price;
@@ -1105,7 +1083,6 @@ function editProduct(index) {
     form.querySelector('[name="pInStock"]').checked = product.inStock;
     form.querySelector('[name="pIsNew"]').checked = product.isNew;
     form.querySelector('[name="pIsPopular"]').checked = product.isPopular;
-
     form.scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -1113,7 +1090,6 @@ function saveProduct(e) {
     e.preventDefault();
     const form = e.target;
     const editIndex = form.dataset.editIndex;
-
     const product = {
         id: editIndex ? STORE_DATA.products[parseInt(editIndex)].id : 'p' + Date.now(),
         name: form.querySelector('[name="pName"]').value.trim(),
@@ -1134,8 +1110,6 @@ function saveProduct(e) {
         isNew: form.querySelector('[name="pIsNew"]').checked,
         isPopular: form.querySelector('[name="pIsPopular"]').checked
     };
-
-    // Handle image file upload
     const fileInput = form.querySelector('[name="pImageFile"]');
     if (fileInput && fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
@@ -1157,7 +1131,6 @@ function saveProductData(product, editIndex) {
         STORE_DATA.products.push(product);
         showToast('✅ Товар добавлен: ' + product.name, 'success');
     }
-
     saveCustomProducts();
     hideProductForm();
     renderAdminProducts();
@@ -1168,7 +1141,6 @@ function saveProductData(product, editIndex) {
 function deleteProduct(index) {
     const p = STORE_DATA.products[index];
     if (!confirm('Удалить товар "' + p.name + '"?')) return;
-
     STORE_DATA.products.splice(index, 1);
     saveCustomProducts();
     renderAdminProducts();
@@ -1181,11 +1153,9 @@ function deleteProduct(index) {
 function renderAdminOrders() {
     const container = document.getElementById('adminOrdersList');
     if (!container) return;
-
     const orders = JSON.parse(localStorage.getItem('matreshka_orders') || '[]');
     const searchQuery = (document.getElementById('adminOrderSearch')?.value || '').toLowerCase();
     const statusFilter = document.getElementById('adminOrderStatus')?.value || 'all';
-
     let filtered = [...orders];
     if (statusFilter !== 'all') {
         filtered = filtered.filter(o => o.status === statusFilter);
@@ -1198,14 +1168,11 @@ function renderAdminOrders() {
             new Date(o.date).toLocaleDateString('ru-RU').includes(searchQuery)
         );
     }
-
     if (filtered.length === 0) {
         container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-500)"><div style="font-size:48px;margin-bottom:16px">📋</div><p>Заказы не найдены</p></div>';
         return;
     }
-
     const statusLabels = { new: 'Новый', processing: 'В обработке', shipped: 'Отправлен', delivered: 'Доставлен', cancelled: 'Отменён' };
-
     container.innerHTML = `
         <table class="admin-orders-table">
             <thead>
@@ -1283,9 +1250,7 @@ function exportOrders() {
         showToast('Нет заказов для экспорта', 'error');
         return;
     }
-
     const statusLabels = { new: 'Новый', processing: 'В обработке', shipped: 'Отправлен', delivered: 'Доставлен', cancelled: 'Отменён' };
-
     let csv = '№;Дата;Клиент;Телефон;Товары;Сумма;Доставка;Оплата;Статус;Адрес\n';
     orders.forEach(o => {
         const items = o.items.map(item => {
@@ -1295,7 +1260,6 @@ function exportOrders() {
         const address = o.address ? `${o.address.city}, ${o.address.street}, ${o.address.house}` : '—';
         csv += `${o.id};${new Date(o.date).toLocaleDateString('ru-RU')};${o.user?.name || '—'};${o.user?.phone || '—'};"${items}";${o.total};${o.deliveryMethod || '—'};${o.paymentMethod || '—'};${statusLabels[o.status] || o.status};"${address}"\n`;
     });
-
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -1307,14 +1271,11 @@ function exportOrders() {
 
 // ===== UI UPDATE =====
 function updateUI() {
-    // Cart badge
     const count = getCartCount();
     document.querySelectorAll('.cart-badge').forEach(el => {
         el.textContent = count;
         el.style.display = count > 0 ? 'flex' : 'none';
     });
-
-    // Auth buttons
     const authBtns = document.getElementById('authButtons');
     if (state.user) {
         authBtns.innerHTML = `
@@ -1331,8 +1292,6 @@ function updateUI() {
 // ===== LOGO =====
 function applyLogo(url) {
     if (!url) return;
-
-    // Header logo
     const logoImg = document.getElementById('logoImg');
     const logoSvg = document.getElementById('logoSvg');
     if (logoImg && logoSvg) {
@@ -1340,8 +1299,6 @@ function applyLogo(url) {
         logoImg.style.display = 'block';
         logoSvg.style.display = 'none';
     }
-
-    // Hero logo
     const heroLogoImg = document.getElementById('heroLogoImg');
     const heroLogoSvg = document.getElementById('heroLogoSvg');
     const heroLogoText = document.getElementById('heroLogoText');
@@ -1351,8 +1308,6 @@ function applyLogo(url) {
         heroLogoSvg.style.display = 'none';
         if (heroLogoText) heroLogoText.style.display = 'none';
     }
-
-    // Footer logo
     const footerLogoImg = document.getElementById('footerLogoImg');
     const footerLogoSvg = document.getElementById('footerLogoSvg');
     if (footerLogoImg && footerLogoSvg) {
@@ -1364,59 +1319,52 @@ function applyLogo(url) {
 
 // ===== INIT =====
 loadState();
-loadCustomProducts();
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Render sections
-    renderPopularProducts();
-    renderFAQ();
+(async function initApp() {
+    await loadCustomProducts();
 
-    // Update UI
-    updateUI();
+    document.addEventListener('DOMContentLoaded', function() {
+        renderPopularProducts();
+        renderFAQ();
+        updateUI();
 
-    // Load saved logo
-    const savedLogo = localStorage.getItem('matreshka_logo');
-    if (savedLogo) {
-        applyLogo(savedLogo);
-    }
-
-    // Header scroll effect
-    window.addEventListener('scroll', function() {
-        const header = document.querySelector('.header');
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
+        const savedLogo = localStorage.getItem('matreshka_logo');
+        if (savedLogo) {
+            applyLogo(savedLogo);
         }
-    });
 
-    // Close modals on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
             }
         });
+
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        document.getElementById('cartOverlay').addEventListener('click', closeCart);
+
+        document.getElementById('passwordInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        document.getElementById('chatInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+
+        if (!localStorage.getItem('matreshka_logo')) {
+            localStorage.setItem('matreshka_logo', 'https://s3.radikal.cloud/2026/06/12/i-171370a0c13fcb6db.webp');
+        }
+
+        console.log('🪡 МАТРЁШКА — Магазин тканей и фурнитуры');
+        console.log('📦 Данные загружены:', STORE_DATA.products.length, 'товаров');
     });
-
-    // Close cart on overlay click
-    document.getElementById('cartOverlay').addEventListener('click', closeCart);
-
-    // Enter key for password
-    document.getElementById('passwordInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') checkPassword();
-    });
-
-    // Enter key for chat
-    document.getElementById('chatInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') sendChatMessage();
-    });
-
-    // Set default logo if not set
-    if (!localStorage.getItem('matreshka_logo')) {
-        localStorage.setItem('matreshka_logo', 'https://s3.radikal.cloud/2026/06/12/i-171370a0c13fcb6db.webp');
-    }
-
-    console.log('🪡 МАТРЁШКА — Магазин тканей и фурнитуры');
-    console.log('📦 Данные загружены:', STORE_DATA.products.length, 'товаров');
-});
+})();
