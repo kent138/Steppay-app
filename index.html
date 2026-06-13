@@ -872,130 +872,39 @@
             <button class="admin-tab" data-admin-tab="orders" onclick="showAdminTab('orders')">📋 Заказы</button>
         </div>
 
-        <!-- Admin Products -->
         <div id="adminTabProducts" class="admin-tab-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px">
-                <h3 style="margin:0">📦 Управление товарами</h3>
-                <div style="display:flex; gap:12px">
-                    <button class="btn btn-primary" onclick="showAddProductForm()">+ Добавить товар</button>
-                    <button class="btn" onclick="syncWithCloud()" style="background:var(--info); color:white">🔄 Синхронизация</button>
-                </div>
+            <div style="display:flex; gap:12px; margin-bottom:20px">
+                <button class="btn btn-primary" onclick="showAddProductForm()">+ Добавить товар</button>
+                <button class="btn" onclick="syncWithCloud()" style="background:#2196F3; color:white">🔄 Синхронизация</button>
             </div>
-
-            <!-- Add/Edit Product Form -->
-            <div id="adminProductForm" style="display:none;background:var(--gray-50);padding:24px;border-radius:var(--radius-md);margin-bottom:24px">
-                <h4 style="margin-bottom:16px">Добавить товар</h4>
+            <div id="adminProductForm" style="display:none; background:#f5f5f5; padding:20px; margin-bottom:20px">
+                <h4>Добавить/Редактировать товар</h4>
                 <form onsubmit="saveProduct(event)">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Название товара *</label>
-                            <input type="text" name="pName" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Категория *</label>
-                            <select name="pCategory" required>
-                                <option value="tkani">Ткани</option>
-                                <option value="furnitura">Фурнитура</option>
-                                <option value="accessories">Аксессуары</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Цена (₽) *</label>
-                            <input type="number" name="pPrice" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Единица измерения</label>
-                            <input type="text" name="pUnit" placeholder="за метр, за шт, за набор">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Описание</label>
-                        <textarea name="pDesc"></textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Эмодзи-иконка</label>
-                            <input type="text" name="pImage" placeholder="🧵">
-                        </div>
-                        <div class="form-group">
-                            <label>Загрузить фото</label>
-                            <input type="file" name="pImageFile" accept="image/*">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Состав</label>
-                            <input type="text" name="pComposition" placeholder="100% хлопок">
-                        </div>
-                        <div class="form-group">
-                            <label>Ширина</label>
-                            <input type="text" name="pWidth" placeholder="150 см">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Плотность</label>
-                            <input type="text" name="pDensity" placeholder="120 г/м²">
-                        </div>
-                        <div class="form-group">
-                            <label>Уход</label>
-                            <input type="text" name="pCare" placeholder="Стирка при 30°C">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Цвет</label>
-                            <input type="text" name="pColor">
-                        </div>
-                        <div class="form-group">
-                            <label>Тип ткани</label>
-                            <input type="text" name="pType" placeholder="Хлопок, Лён...">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Количество на складе</label>
-                            <input type="number" name="pStock" value="10">
-                        </div>
-                        <div class="form-group" style="display:flex;gap:16px;align-items:center;padding-top:24px">
-                            <label><input type="checkbox" name="pInStock" checked> В наличии</label>
-                            <label><input type="checkbox" name="pIsNew"> Новинка</label>
-                            <label><input type="checkbox" name="pIsPopular"> Популярный</label>
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:12px;margin-top:16px">
-                        <button type="submit" class="btn btn-primary">💾 Сохранить</button>
-                        <button type="button" class="btn btn-dark" onclick="hideProductForm()">Отмена</button>
-                    </div>
+                    <input type="text" name="pName" placeholder="Название" required>
+                    <input type="number" name="pPrice" placeholder="Цена" required>
+                    <button type="submit">💾 Сохранить</button>
+                    <button type="button" onclick="hideProductForm()">Отмена</button>
                 </form>
             </div>
-
-            <div id="adminProductsList" class="admin-products-grid"></div>
+            <div id="adminProductsList"></div>
         </div>
 
-        <!-- Admin Orders -->
         <div id="adminTabOrders" class="admin-tab-content" style="display:none">
             <h3>Управление заказами</h3>
             <div class="admin-search">
-                <input type="text" id="adminOrderSearch" placeholder="🔍 Поиск по номеру, имени, дате..." oninput="filterAdminOrders()">
+                <input type="text" id="adminOrderSearch" placeholder="Поиск..." oninput="filterAdminOrders()">
                 <select id="adminOrderStatus" onchange="filterAdminOrders()">
-                    <option value="all">Все статусы</option>
+                    <option value="all">Все</option>
                     <option value="new">Новые</option>
                     <option value="processing">В обработке</option>
                     <option value="shipped">Отправлен</option>
                     <option value="delivered">Доставлен</option>
                     <option value="cancelled">Отменён</option>
                 </select>
-                <button class="btn btn-primary" onclick="exportOrders()">📥 Экспорт CSV</button>
+                <button class="btn btn-primary" onclick="exportOrders()">📥 Экспорт</button>
             </div>
             <div id="adminOrdersList"></div>
         </div>
     </div>
 </div>
-
-<!-- ===== Scripts ===== -->
-<script src="js/app.js"></script>
-</body>
-</html>
+<html>
