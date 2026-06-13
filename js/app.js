@@ -28,12 +28,40 @@ const STORE_DATA = {
         { q: 'Какие способы оплаты доступны?', a: 'Мы принимаем наличные при получении, онлайн-оплату картой МИР и оплату через СБП (Система быстрых платежей).' },
         { q: 'Как осуществляется доставка?', a: 'Мы отправляем заказы Почтой России и СДЭК. Сроки доставки зависят от региона: от 1-2 дней по Чите до 7-14 дней в отдалённые регионы.' },
         { q: 'Есть ли бесплатная доставка?', a: 'Да, при заказе от 5 000 ₽ доставка по России бесплатная!' },
-        { q: 'Как вернуть товар?', a: 'Вы можете вернуть ткань в течение 14 дней, если она не была разрезана. Фурнитура возврату не подлежит. Подробнее в разделе "Возврат и обмен".' },
+        { q: 'Как вернуть товар?', a: 'Вы можете вернуть ткань в течение 14 дней, если она не была разрезана. Фурнитура возврату не подлежит. Подробнее в разделе \"Возврат и обмен\".' },
         { q: 'Можно ли заказать отрез нужной длины?', a: 'Да, вы можете заказать ткань любой длины от 0,5 метра. Цена указана за 1 метр.' },
         { q: 'Как узнать о новинках?', a: 'Подпишитесь на нашу рассылку на главной странице или следите за новостями в блоге.' },
         { q: 'Работаете ли вы с юридическими лицами?', a: 'Да, мы работаем с ИП и юридическими лицами. Для оформления заказа свяжитесь с нами по телефону.' }
     ]
 };
+
+// ===== CUSTOM PRODUCTS PERSISTENCE =====
+// IDs товаров, которые идут по умолчанию (не удаляем и не перезаписываем)
+const DEFAULT_PRODUCT_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12','p13','p14','p15','p16'];
+
+// Загрузить пользовательские товары из localStorage
+function loadCustomProducts() {
+    try {
+        const saved = localStorage.getItem('matreshka_products');
+        if (saved) {
+            const customProducts = JSON.parse(saved);
+            const existingIds = STORE_DATA.products.map(p => p.id);
+            customProducts.forEach(p => {
+                if (!existingIds.includes(p.id)) {
+                    STORE_DATA.products.push(p);
+                }
+            });
+        }
+    } catch (e) {
+        console.warn('Error loading custom products:', e);
+    }
+}
+
+// Сохранить пользовательские товары в localStorage
+function saveCustomProducts() {
+    const customProducts = STORE_DATA.products.filter(p => !DEFAULT_PRODUCT_IDS.includes(p.id));
+    localStorage.setItem('matreshka_products', JSON.stringify(customProducts));
+}
 
 // ===== STATE =====
 const state = {
@@ -578,8 +606,8 @@ function renderProfileWishlist() {
                             <span class="unit">${p.unit}</span>
                         </div>
                         <div class="product-actions">
-                            <button class="btn-add-cart" onclick="addToCart('${p.id}')">🛒 В корзину</button>
-                            <button class="btn-detail" onclick="toggleWishlist('${p.id}')">❤️</button>
+                            <button class="btn-add-cart" onclick="addToCart('${p.id}')\">🛒 В корзину</button>
+                            <button class="btn-detail" onclick="toggleWishlist('${p.id}')\">❤️</button>
                         </div>
                     </div>
                 </div>
@@ -1130,6 +1158,7 @@ function saveProductData(product, editIndex) {
         showToast('✅ Товар добавлен: ' + product.name, 'success');
     }
 
+    saveCustomProducts();
     hideProductForm();
     renderAdminProducts();
     renderCatalog();
@@ -1141,6 +1170,7 @@ function deleteProduct(index) {
     if (!confirm('Удалить товар "' + p.name + '"?')) return;
 
     STORE_DATA.products.splice(index, 1);
+    saveCustomProducts();
     renderAdminProducts();
     renderCatalog();
     renderPopularProducts();
@@ -1334,6 +1364,7 @@ function applyLogo(url) {
 
 // ===== INIT =====
 loadState();
+loadCustomProducts();
 
 document.addEventListener('DOMContentLoaded', function() {
     // Render sections
