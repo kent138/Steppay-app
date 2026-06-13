@@ -35,7 +35,86 @@ const STORE_DATA = {
     ]
 };
 
+// ===== ОБЛАЧНОЕ ХРАНИЛИЩЕ JSONBin.io =====
+// 👇 ЗАМЕНИТЕ НА ВАШИ ДАННЫЕ ПОСЛЕ РЕГИСТРАЦИИ НА JSONBIN.IO
+const BIN_ID = 'ВАШ_BIN_ID_СЮДА';
+const API_KEY = 'ВАШ_API_КЛЮЧ_СЮДА';
+const API_BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
 const DEFAULT_PRODUCT_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12','p13','p14','p15','p16'];
+
+// ===== ЗАГРУЗКА ТОВАРОВ ИЗ ОБЛАКА =====
+async function loadCustomProducts() {
+    try {
+        const response = await fetch(API_BASE_URL, {
+            headers: { 'X-Master-Key': API_KEY }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            const cloudProducts = data.record?.products || [];
+            if (cloudProducts.length > 0) {
+                const defaultIds = DEFAULT_PRODUCT_IDS;
+                STORE_DATA.products = STORE_DATA.products.filter(p => defaultIds.includes(p.id));
+                cloudProducts.forEach(p => {
+                    if (!defaultIds.includes(p.id)) {
+                        STORE_DATA.products.push(p);
+                    }
+                });
+                console.log('☁️ Загружено товаров из облака:', cloudProducts.length);
+                return;
+            }
+        }
+    } catch(e) { console.warn('☁️ Ошибка загрузки из облака:', e); }
+    
+    // Резерв: загрузка из localStorage
+    try {
+        const saved = localStorage.getItem('matreshka_products');
+        if (saved) {
+            const customProducts = JSON.parse(saved);
+            const defaultIds = DEFAULT_PRODUCT_IDS;
+            customProducts.forEach(p => {
+                if (!defaultIds.includes(p.id)) {
+                    STORE_DATA.products.push(p);
+                }
+            });
+            console.log('💾 Загружено из localStorage (резерв):', customProducts.length);
+        }
+    } catch(e) { console.warn('Ошибка загрузки из localStorage:', e); }
+}
+
+// ===== СОХРАНЕНИЕ ТОВАРОВ В ОБЛАКО =====
+async function saveCustomProducts() {
+    const customProducts = STORE_DATA.products.filter(p => !DEFAULT_PRODUCT_IDS.includes(p.id));
+    localStorage.setItem('matreshka_products', JSON.stringify(customProducts));
+    
+    try {
+        const response = await fetch(API_BASE_URL, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': API_KEY
+            },
+            body: JSON.stringify({ products: customProducts })
+        });
+        if (response.ok) {
+            console.log('☁️ Сохранено в облако:', customProducts.length, 'товаров');
+        } else {
+            console.warn('Ошибка сохранения в облако:', response.status);
+        }
+    } catch(e) { console.warn('☁️ Ошибка сохранения в облако:', e); }
+}
+
+// ===== СИНХРОНИЗАЦИЯ С ОБЛАКОМ =====
+async function syncWithCloud() {
+    showToast('🔄 Синхронизация с облаком...', 'info');
+    await loadCustomProducts();
+    renderCatalog();
+    renderPopularProducts();
+    if (document.getElementById('adminProductsList')) {
+        renderAdminProducts();
+    }
+    showToast('✅ Данные синхронизированы', 'success');
+}
 
 // ===== STATE =====
 const state = {
@@ -425,7 +504,7 @@ function showAdminTab(tab) {
 function renderAdminProducts() {
     const container = document.getElementById('adminProductsList');
     if (!container) return;
-    container.innerHTML = STORE_DATA.products.map((p, index) => `<div class="admin-product-card"><div class="product-image">${p.image}</div><div><strong>${p.name}</strong></div><div>${p.price} ₽</div><button onclick="editProduct(${index})">✏️ Ред</button> <button onclick="deleteProduct(${index})">🗑️ Уд</button></div>`).join('');
+    container.innerHTML = STORE_DATA.products.map((p, index) => `<div class="admin-product-card"><div class="product-image">${p.image}</div><div><strong>${p.name}</strong></div><div>${p.price} ₽</div><div>${p.stock} шт.</div><div><button onclick="editProduct(${index})">✏️ Ред</button> <button onclick="deleteProduct(${index})">🗑️ Уд</button></div></div>`).join('');
 }
 function showAddProductForm() { document.getElementById('adminProductForm').style.display = 'block'; }
 function hideProductForm() { document.getElementById('adminProductForm').style.display = 'none'; }
@@ -434,51 +513,80 @@ function editProduct(index) {
     const form = document.getElementById('adminProductForm');
     form.style.display = 'block';
     form.querySelector('[name="pName"]').value = p.name;
-    form.querySelector('[name="pPrice"]').value = p.price;
     form.querySelector('[name="pCategory"]').value = p.category;
+    form.querySelector('[name="pPrice"]').value = p.price;
     form.querySelector('[name="pUnit"]').value = p.unit;
     form.querySelector('[name="pDesc"]').value = p.desc;
     form.querySelector('[name="pImage"]').value = p.image;
+    form.querySelector('[name="pComposition"]').value = p.composition || '';
+    form.querySelector('[name="pWidth"]').value = p.width || '';
     form.querySelector('[name="pStock"]').value = p.stock;
     form.querySelector('[name="pIsNew"]').checked = p.isNew;
     form.querySelector('[name="pIsPopular"]').checked = p.isPopular;
+    form.querySelector('[name="pInStock"]').checked = p.inStock;
     form.dataset.editIndex = index;
 }
 function saveProduct(e) {
     e.preventDefault();
     const form = e.target;
     const editIndex = form.dataset.editIndex;
-    const product = {
-        id: editIndex ? STORE_DATA.products[parseInt(editIndex)].id : 'p' + Date.now(),
-        name: form.querySelector('[name="pName"]').value,
+    
+    // Обработка загрузки фото
+    const fileInput = form.querySelector('[name="pImageFile"]');
+    let imageValue = form.querySelector('[name="pImage"]').value.trim() || '📦';
+    
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const product = buildProductObject(form, editIndex, ev.target.result);
+            saveProductData(product, editIndex);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        const product = buildProductObject(form, editIndex, imageValue);
+        saveProductData(product, editIndex);
+    }
+}
+function buildProductObject(form, editIndex, imageValue) {
+    return {
+        id: editIndex !== undefined && editIndex !== '' ? STORE_DATA.products[parseInt(editIndex)].id : 'p' + Date.now(),
+        name: form.querySelector('[name="pName"]').value.trim(),
         category: form.querySelector('[name="pCategory"]').value,
         categoryName: STORE_DATA.categories.find(c => c.id === form.querySelector('[name="pCategory"]').value)?.name || 'Ткани',
         price: Number(form.querySelector('[name="pPrice"]').value),
-        unit: form.querySelector('[name="pUnit"]').value || 'шт',
-        desc: form.querySelector('[name="pDesc"]').value || '',
-        image: form.querySelector('[name="pImage"]').value || '📦',
-        composition: '—',
-        width: '—',
+        unit: form.querySelector('[name="pUnit"]').value.trim() || 'шт',
+        desc: form.querySelector('[name="pDesc"]').value.trim() || 'Описание отсутствует',
+        image: imageValue,
+        composition: form.querySelector('[name="pComposition"]')?.value.trim() || '—',
+        width: form.querySelector('[name="pWidth"]')?.value.trim() || '—',
         density: '—',
         care: '—',
         color: '—',
         type: '—',
-        stock: Number(form.querySelector('[name="pStock"]').value) || 10,
-        inStock: true,
+        stock: Number(form.querySelector('[name="pStock"]').value) || 0,
+        inStock: form.querySelector('[name="pInStock"]')?.checked || true,
         isNew: form.querySelector('[name="pIsNew"]')?.checked || false,
         isPopular: form.querySelector('[name="pIsPopular"]')?.checked || false
     };
-    if (editIndex !== undefined && editIndex !== '') STORE_DATA.products[parseInt(editIndex)] = product;
-    else STORE_DATA.products.push(product);
+}
+function saveProductData(product, editIndex) {
+    if (editIndex !== undefined && editIndex !== '') {
+        STORE_DATA.products[parseInt(editIndex)] = product;
+        showToast('✅ Товар обновлён: ' + product.name, 'success');
+    } else {
+        STORE_DATA.products.push(product);
+        showToast('✅ Товар добавлен: ' + product.name, 'success');
+    }
+    saveCustomProducts();
     hideProductForm();
     renderAdminProducts();
     renderCatalog();
     renderPopularProducts();
-    showToast('Товар сохранён', 'success');
 }
 function deleteProduct(index) {
     if (!confirm('Удалить товар?')) return;
     STORE_DATA.products.splice(index, 1);
+    saveCustomProducts();
     renderAdminProducts();
     renderCatalog();
     renderPopularProducts();
@@ -504,12 +612,6 @@ function deleteOrder(orderId) {
     renderAdminOrders();
 }
 
-// ===== SYNC =====
-async function syncWithCloud() {
-    showToast('🔄 Синхронизация...', 'info');
-    setTimeout(() => showToast('✅ Синхронизация завершена', 'success'), 1000);
-}
-
 // ===== UI UPDATE =====
 function updateUI() {
     const count = getCartCount();
@@ -529,10 +631,13 @@ function applyLogo(url) {
 
 // ===== INIT =====
 loadState();
-document.addEventListener('DOMContentLoaded', function() {
-    renderPopularProducts();
-    renderFAQ();
-    updateUI();
-    if (!localStorage.getItem('matreshka_logo')) localStorage.setItem('matreshka_logo', 'https://s3.radikal.cloud/2026/06/12/i-171370a0c13fcb6db.webp');
-    console.log('МАТРЁШКА загружена');
-});
+(async function initApp() {
+    await loadCustomProducts();
+    document.addEventListener('DOMContentLoaded', function() {
+        renderPopularProducts();
+        renderFAQ();
+        updateUI();
+        if (!localStorage.getItem('matreshka_logo')) localStorage.setItem('matreshka_logo', 'https://s3.radikal.cloud/2026/06/12/i-171370a0c13fcb6db.webp');
+        console.log('🪡 МАТРЁШКА загружена, товаров:', STORE_DATA.products.length);
+    });
+})();
