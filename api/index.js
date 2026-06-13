@@ -5,7 +5,7 @@ const BUCKET_NAME = 'matroshka-products-store';
 const STORAGE_FILE = 'products.json';
 const DEFAULT_PRODUCT_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12','p13','p14','p15','p16'];
 
-// ===== Object Storage Helper (public bucket - no auth needed) =====
+// ===== Object Storage Helper (public bucket) =====
 async function getStorageData() {
     try {
         const response = await fetch(
@@ -123,7 +123,6 @@ async function handleDeleteProduct(productId) {
 module.exports.handler = async function (event, context) {
     console.log('Event path:', event.path);
 
-    // Handle CORS preflight
     if (event.httpMethod === 'OPTIONS') {
         return corsResponse(200, {});
     }
@@ -141,23 +140,19 @@ module.exports.handler = async function (event, context) {
             }
         }
 
-        // GET /products
         if (method === 'GET' && path === '/products') {
             return await handleGetProducts();
         }
 
-        // POST /products
         if (method === 'POST' && path === '/products') {
             return await handleAddProduct(body);
         }
 
-        // PUT /products/:id
         const putMatch = path.match(/^\/products\/(.+)$/);
         if (method === 'PUT' && putMatch) {
             return await handleUpdateProduct(putMatch[1], body);
         }
 
-        // DELETE /products/:id
         const deleteMatch = path.match(/^\/products\/(.+)$/);
         if (method === 'DELETE' && deleteMatch) {
             return await handleDeleteProduct(deleteMatch[1]);
