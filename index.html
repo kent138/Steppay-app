@@ -874,13 +874,13 @@
 
         <!-- Admin Products -->
         <div id="adminTabProducts" class="admin-tab-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px">
-        <h3 style="margin:0">📦 Управление товарами</h3>
-        <div style="display:flex; gap:12px">
-            <button class="btn btn-primary" onclick="showAddProductForm()">+ Добавить товар</button>
-            <button class="btn" onclick="syncWithCloud()" style="background:var(--info); color:white">🔄 Синхронизация</button>
-        </div>
-    </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px">
+                <h3 style="margin:0">📦 Управление товарами</h3>
+                <div style="display:flex; gap:12px">
+                    <button class="btn btn-primary" onclick="showAddProductForm()">+ Добавить товар</button>
+                    <button class="btn" onclick="syncWithCloud()" style="background:var(--info); color:white">🔄 Синхронизация</button>
+                </div>
+            </div>
 
             <!-- Add/Edit Product Form -->
             <div id="adminProductForm" style="display:none;background:var(--gray-50);padding:24px;border-radius:var(--radius-md);margin-bottom:24px">
@@ -976,26 +976,25 @@
         </div>
 
         <!-- Admin Orders -->
-        <!-- Admin Orders -->
-<div id="adminTabOrders" class="admin-tab-content" style="display:none">
-    <h3>Управление заказами</h3>
-    <div class="admin-search">
-        <input type="text" id="adminOrderSearch" placeholder="🔍 Поиск по номеру, имени, дате..." oninput="filterAdminOrders()">
-        <select id="adminOrderStatus" onchange="filterAdminOrders()">
-            <option value="all">Все статусы</option>
-            <option value="new">Новые</option>
-            <option value="processing">В обработке</option>
-            <option value="shipped">Отправлен</option>
-            <option value="delivered">Доставлен</option>
-            <option value="cancelled">Отменён</option>
-        </select>
-        <button class="btn btn-primary" onclick="exportOrders()">📥 Экспорт CSV</button>
-    </div>
-    <div id="adminOrdersList"></div>
-</div>
-            <div id="adminProductsList" class="admin-products-grid"></div>
+        <div id="adminTabOrders" class="admin-tab-content" style="display:none">
+            <h3>Управление заказами</h3>
+            <div class="admin-search">
+                <input type="text" id="adminOrderSearch" placeholder="🔍 Поиск по номеру, имени, дате..." oninput="filterAdminOrders()">
+                <select id="adminOrderStatus" onchange="filterAdminOrders()">
+                    <option value="all">Все статусы</option>
+                    <option value="new">Новые</option>
+                    <option value="processing">В обработке</option>
+                    <option value="shipped">Отправлен</option>
+                    <option value="delivered">Доставлен</option>
+                    <option value="cancelled">Отменён</option>
+                </select>
+                <button class="btn btn-primary" onclick="exportOrders()">📥 Экспорт CSV</button>
+            </div>
+            <div id="adminOrdersList"></div>
         </div>
     </div>
+</div>
+
 <!-- ===== Scripts ===== -->
 <script src="js/app.js"></script>
 </body>
