@@ -36,92 +36,93 @@ const STORE_DATA = {
 };
 
 // ===== CLOUD API =====
-const API_BASE_URL = 'https://functions.yandexcloud.net/d4enevddtsdl324s0314';
+// ===== ОБЛАЧНОЕ ХРАНИЛИЩЕ JSONBin.io
+ =====
+const BIN_ID = '6a2cfb00da38895dfeb90e82';        
+const API_KEY = '
+$2a$10$5McJfpcFUclQsaTwtdmbteWHlI8hMm3iH.7lfkPVnomXp5SjikLNW'; 
+const API_BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 const DEFAULT_PRODUCT_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12','p13','p14','p15','p16'];
 
-// Загрузить пользовательские товары из облака (с fallback на localStorage)
+// ===== ЗАГРУЗКА ТОВАРОВ ИЗ ОБЛАКА =====
 async function loadCustomProducts() {
     try {
-        const response = await fetch(API_BASE_URL + '/products');
+        const response = await fetch(API_BASE_URL, {
+            headers: { 'X-Master-Key': API_KEY }
+        });
+        
         if (response.ok) {
             const data = await response.json();
-            const customProducts = data.customProducts || [];
-            localStorage.setItem('matreshka_products', JSON.stringify(customProducts));
-            const existingIds = STORE_DATA.products.map(p => p.id);
-            customProducts.forEach(p => {
-                if (!existingIds.includes(p.id)) {
-                    STORE_DATA.products.push(p);
-                }
-            });
-            console.log('☁️ Загружено товаров из облака:', customProducts.length);
-            return;
+            const cloudProducts = data.record?.products || [];
+            
+            if (cloudProducts.length > 0) {
+                // Сохраняем только стандартные товары
+                const defaultIds = DEFAULT_PRODUCT_IDS;
+                STORE_DATA.products = STORE_DATA.products.filter(p => defaultIds.includes(p.id));
+                
+                // Добавляем товары из облака
+                cloudProducts.forEach(p => {
+                    if (!defaultIds.includes(p.id)) {
+                        STORE_DATA.products.push(p);
+                    }
+                });
+                
+                console.log('☁️ Загружено товаров из облака:', cloudProducts.length);
+                return;
+            }
+        } else {
+            console.warn('Ошибка загрузки из облака:', response.status);
         }
     } catch (e) {
-        console.warn('☁️ Ошибка загрузки из облака, пробуем localStorage:', e.message);
+        console.warn('☁️ Ошибка соединения с облаком:', e.message);
     }
+    
+    // Если облако не доступно, загружаем из localStorage (резерв)
     try {
         const saved = localStorage.getItem('matreshka_products');
         if (saved) {
             const customProducts = JSON.parse(saved);
-            const existingIds = STORE_DATA.products.map(p => p.id);
+            const defaultIds = DEFAULT_PRODUCT_IDS;
             customProducts.forEach(p => {
-                if (!existingIds.includes(p.id)) {
+                if (!defaultIds.includes(p.id)) {
                     STORE_DATA.products.push(p);
                 }
             });
+            console.log('💾 Загружено из localStorage (резерв):', customProducts.length);
         }
     } catch (e) {
-        console.warn('Error loading custom products:', e);
+        console.warn('Ошибка загрузки из localStorage:', e);
     }
 }
 
-// Сохранить пользовательские товары в облако и localStorage
+// ===== СОХРАНЕНИЕ ТОВАРОВ В ОБЛАКО =====
 async function saveCustomProducts() {
+    // Получаем только добавленные товары (не стандартные)
     const customProducts = STORE_DATA.products.filter(p => !DEFAULT_PRODUCT_IDS.includes(p.id));
+    
+    // Сохраняем резервную копию в localStorage
     localStorage.setItem('matreshka_products', JSON.stringify(customProducts));
-    for (const product of customProducts) {
-        try {
-            const checkResponse = await fetch(API_BASE_URL + '/products');
-            if (checkResponse.ok) {
-                const data = await checkResponse.json();
-                const existing = (data.customProducts || []).find(p => p.id === product.id);
-                if (existing) {
-                    await fetch(API_BASE_URL + '/products/' + product.id, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ product })
-                    });
-                } else {
-                    await fetch(API_BASE_URL + '/products', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ product })
-                    });
-                }
-            }
-        } catch (e) {
-            console.warn('☁️ Ошибка синхронизации товара:', product.name, e.message);
-        }
-    }
+    
+    // Сохраняем в облако
     try {
-        const checkResponse = await fetch(API_BASE_URL + '/products');
-        if (checkResponse.ok) {
-            const data = await checkResponse.json();
-            const cloudProducts = data.customProducts || [];
-            const localIds = customProducts.map(p => p.id);
-            for (const cloudProduct of cloudProducts) {
-                if (!localIds.includes(cloudProduct.id)) {
-                    await fetch(API_BASE_URL + '/products/' + cloudProduct.id, {
-                        method: 'DELETE'
-                    });
-                }
-            }
+        const response = await fetch(API_BASE_URL, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': API_KEY
+            },
+            body: JSON.stringify({ products: customProducts })
+        });
+        
+        if (response.ok) {
+            console.log('☁️ Сохранено в облако:', customProducts.length, 'товаров');
+        } else {
+            console.warn('Ошибка сохранения в облако:', response.status);
         }
     } catch (e) {
-        console.warn('☁️ Ошибка очистки удалённых товаров:', e.message);
+        console.warn('☁️ Ошибка сохранения в облако:', e.message);
     }
 }
-
 // ===== STATE =====
 const state = {
     user: null,
@@ -1267,6 +1268,17 @@ function exportOrders() {
     link.click();
     URL.revokeObjectURL(link.href);
     showToast('📥 Экспорт завершён', 'success');
+}
+// ===== ПРИНУДИТЕЛЬНАЯ СИНХРОНИЗАЦИЯ С ОБЛАКОМ =====
+async function syncWithCloud() {
+    showToast('🔄 Синхронизация с облаком...', 'info');
+    await loadCustomProducts();
+    renderCatalog();
+    renderPopularProducts();
+    if (document.getElementById('adminProductsList')) {
+        renderAdminProducts();
+    }
+    showToast('✅ Данные синхронизированы', 'success');
 }
 
 // ===== UI UPDATE =====
