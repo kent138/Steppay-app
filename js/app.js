@@ -1,101 +1,31 @@
 // ===== STORE DATA =====
 const STORE_DATA = {
     products: [
-        { id: 'p1', name: 'Хлопок премиум', category: 'tkani', categoryName: 'Ткани', price: 890, unit: 'за метр', image: '🧵', composition: '100% хлопок', width: '150 см', density: '130 г/м²', care: 'Стирка при 30°C', color: 'Белый', type: 'Хлопок', inStock: true, isNew: true, isPopular: true, stock: 50, desc: 'Высококачественный хлопок премиум-класса.' },
-        { id: 'p2', name: 'Лён натуральный', category: 'tkani', categoryName: 'Ткани', price: 1200, unit: 'за метр', image: '🌾', composition: '100% лён', width: '140 см', density: '180 г/м²', care: 'Стирка при 40°C', color: 'Натуральный', type: 'Лён', inStock: true, isNew: false, isPopular: true, stock: 30, desc: 'Натуральный лён высшего сорта.' },
-        { id: 'p3', name: 'Шёлк натуральный', category: 'tkani', categoryName: 'Ткани', price: 2500, unit: 'за метр', image: '🦋', composition: '100% шёлк', width: '110 см', density: '60 г/м²', care: 'Химчистка', color: 'Слоновая кость', type: 'Шёлк', inStock: true, isNew: true, isPopular: false, stock: 15, desc: 'Изысканный натуральный шёлк.' },
-        { id: 'p4', name: 'Шерсть мериноса', category: 'tkani', categoryName: 'Ткани', price: 1800, unit: 'за метр', image: '🐑', composition: '100% шерсть мериноса', width: '150 см', density: '220 г/м²', care: 'Химчистка', color: 'Серый', type: 'Шерсть', inStock: true, isNew: false, isPopular: true, stock: 20, desc: 'Тёплая и мягкая шерсть мериноса.' },
-        { id: 'p5', name: 'Пуговицы деревянные', category: 'furnitura', categoryName: 'Фурнитура', price: 150, unit: 'за набор (10 шт)', image: '🪵', composition: 'Дуб', width: '—', density: '—', care: '—', color: 'Натуральный', type: 'Пуговицы', inStock: true, isNew: false, isPopular: true, stock: 100, desc: 'Набор деревянных пуговиц ручной работы.' },
-        { id: 'p6', name: 'Молния потайная', category: 'furnitura', categoryName: 'Фурнитура', price: 80, unit: 'за шт', image: '🤐', composition: 'Металл/Пластик', width: '—', density: '—', care: '—', color: 'Чёрный', type: 'Молнии', inStock: true, isNew: true, isPopular: false, stock: 200, desc: 'Потайная молния для юбок и платьев.' },
-        { id: 'p7', name: 'Кружево хлопковое', category: 'furnitura', categoryName: 'Фурнитура', price: 350, unit: 'за метр', image: '🤍', composition: '100% хлопок', width: '5 см', density: '—', care: 'Ручная стирка', color: 'Белый', type: 'Кружево', inStock: true, isNew: false, isPopular: true, stock: 40, desc: 'Нежное хлопковое кружево.' },
-        { id: 'p8', name: 'Нитки полиэстер', category: 'furnitura', categoryName: 'Фурнитура', price: 60, unit: 'за катушку', image: '🧶', composition: '100% полиэстер', width: '—', density: '—', care: '—', color: 'Красный', type: 'Нитки', inStock: true, isNew: false, isPopular: false, stock: 500, desc: 'Прочные нитки из полиэстера.' },
-        { id: 'p9', name: 'Ножницы портновские', category: 'accessories', categoryName: 'Аксессуары', price: 1200, unit: 'за шт', image: '✂️', composition: 'Нержавеющая сталь', width: '—', density: '—', care: 'Протирать после использования', color: 'Серебристый', type: 'Инструменты', inStock: true, isNew: false, isPopular: true, stock: 25, desc: 'Профессиональные портновские ножницы.' },
-        { id: 'p10', name: 'Иглы для шитья', category: 'accessories', categoryName: 'Аксессуары', price: 200, unit: 'за набор (20 шт)', image: '🪡', composition: 'Сталь', width: '—', density: '—', care: '—', color: 'Серебристый', type: 'Иглы', inStock: true, isNew: false, isPopular: false, stock: 100, desc: 'Набор игл для ручного шитья.' },
-        { id: 'p11', name: 'Сантиметровая лента', category: 'accessories', categoryName: 'Аксессуары', price: 80, unit: 'за шт', image: '📏', composition: 'Пластик', width: '—', density: '—', care: '—', color: 'Разноцветный', type: 'Инструменты', inStock: true, isNew: false, isPopular: false, stock: 150, desc: 'Мягкая сантиметровая лента.' },
-        { id: 'p12', name: 'Хлопок с принтом', category: 'tkani', categoryName: 'Ткани', price: 950, unit: 'за метр', image: '🌸', composition: '100% хлопок', width: '150 см', density: '125 г/м²', care: 'Стирка при 30°C', color: 'Розовый', type: 'Хлопок', inStock: true, isNew: true, isPopular: true, stock: 35, desc: 'Хлопок с нежным цветочным принтом.' },
-        { id: 'p13', name: 'Фетр цветной', category: 'tkani', categoryName: 'Ткани', price: 450, unit: 'за лист (А4)', image: '🎨', composition: '100% полиэстер', width: '—', density: '200 г/м²', care: 'Ручная стирка', color: 'Ассорти', type: 'Фетр', inStock: true, isNew: false, isPopular: false, stock: 60, desc: 'Цветной фетр для рукоделия.' },
-        { id: 'p14', name: 'Бисер чешский', category: 'furnitura', categoryName: 'Фурнитура', price: 120, unit: 'за пакетик (10 г)', image: '💎', composition: 'Стекло', width: '—', density: '—', care: '—', color: 'Золотой', type: 'Бисер', inStock: true, isNew: false, isPopular: false, stock: 80, desc: 'Качественный чешский бисер.' },
-        { id: 'p15', name: 'Пяльцы для вышивания', category: 'accessories', categoryName: 'Аксессуары', price: 350, unit: 'за шт', image: '🟤', composition: 'Дерево', width: '—', density: '—', care: '—', color: 'Натуральный', type: 'Инструменты', inStock: true, isNew: false, isPopular: false, stock: 40, desc: 'Деревянные пяльцы для вышивания.' },
-        { id: 'p16', name: 'Ткань костюмная', category: 'tkani', categoryName: 'Ткани', price: 1500, unit: 'за метр', image: '👔', composition: '45% шерсть, 55% полиэстер', width: '150 см', density: '240 г/м²', care: 'Химчистка', color: 'Тёмно-синий', type: 'Костюмная', inStock: true, isNew: false, isPopular: true, stock: 25, desc: 'Классическая костюмная ткань.' }
+        { id: 'p1', name: 'Хлопок премиум', category: 'tkani', categoryName: 'Ткани', price: 890, unit: 'за метр', image: '🧵', composition: '100% хлопок', width: '150 см', inStock: true, isNew: true, isPopular: true, stock: 50, desc: 'Высококачественный хлопок премиум-класса.' },
+        { id: 'p2', name: 'Лён натуральный', category: 'tkani', categoryName: 'Ткани', price: 1200, unit: 'за метр', image: '🌾', composition: '100% лён', width: '140 см', inStock: true, isNew: false, isPopular: true, stock: 30, desc: 'Натуральный лён высшего сорта.' },
+        { id: 'p3', name: 'Шёлк натуральный', category: 'tkani', categoryName: 'Ткани', price: 2500, unit: 'за метр', image: '🦋', composition: '100% шёлк', width: '110 см', inStock: true, isNew: true, isPopular: false, stock: 15, desc: 'Изысканный натуральный шёлк.' },
+        { id: 'p4', name: 'Шерсть мериноса', category: 'tkani', categoryName: 'Ткани', price: 1800, unit: 'за метр', image: '🐑', composition: '100% шерсть', width: '150 см', inStock: true, isNew: false, isPopular: true, stock: 20, desc: 'Тёплая и мягкая шерсть мериноса.' },
+        { id: 'p5', name: 'Пуговицы деревянные', category: 'furnitura', categoryName: 'Фурнитура', price: 150, unit: 'набор', image: '🪵', inStock: true, isNew: false, isPopular: true, stock: 100, desc: 'Набор деревянных пуговиц.' },
+        { id: 'p6', name: 'Молния потайная', category: 'furnitura', categoryName: 'Фурнитура', price: 80, unit: 'шт', image: '🤐', inStock: true, isNew: true, isPopular: false, stock: 200, desc: 'Потайная молния для юбок.' },
+        { id: 'p7', name: 'Кружево хлопковое', category: 'furnitura', categoryName: 'Фурнитура', price: 350, unit: 'метр', image: '🤍', inStock: true, isNew: false, isPopular: true, stock: 40, desc: 'Нежное хлопковое кружево.' },
+        { id: 'p8', name: 'Нитки полиэстер', category: 'furnitura', categoryName: 'Фурнитура', price: 60, unit: 'катушка', image: '🧶', inStock: true, isNew: false, isPopular: false, stock: 500, desc: 'Прочные нитки из полиэстера.' },
+        { id: 'p9', name: 'Ножницы портновские', category: 'accessories', categoryName: 'Аксессуары', price: 1200, unit: 'шт', image: '✂️', inStock: true, isNew: false, isPopular: true, stock: 25, desc: 'Профессиональные портновские ножницы.' },
+        { id: 'p10', name: 'Иглы для шитья', category: 'accessories', categoryName: 'Аксессуары', price: 200, unit: 'набор', image: '🪡', inStock: true, isNew: false, isPopular: false, stock: 100, desc: 'Набор игл для ручного шитья.' },
+        { id: 'p11', name: 'Сантиметровая лента', category: 'accessories', categoryName: 'Аксессуары', price: 80, unit: 'шт', image: '📏', inStock: true, isNew: false, isPopular: false, stock: 150, desc: 'Мягкая сантиметровая лента.' },
+        { id: 'p12', name: 'Хлопок с принтом', category: 'tkani', categoryName: 'Ткани', price: 950, unit: 'метр', image: '🌸', inStock: true, isNew: true, isPopular: true, stock: 35, desc: 'Хлопок с нежным цветочным принтом.' },
+        { id: 'p13', name: 'Фетр цветной', category: 'tkani', categoryName: 'Ткани', price: 450, unit: 'лист', image: '🎨', inStock: true, isNew: false, isPopular: false, stock: 60, desc: 'Цветной фетр для рукоделия.' },
+        { id: 'p14', name: 'Бисер чешский', category: 'furnitura', categoryName: 'Фурнитура', price: 120, unit: 'пакет', image: '💎', inStock: true, isNew: false, isPopular: false, stock: 80, desc: 'Качественный чешский бисер.' },
+        { id: 'p15', name: 'Пяльцы для вышивания', category: 'accessories', categoryName: 'Аксессуары', price: 350, unit: 'шт', image: '🟤', inStock: true, isNew: false, isPopular: false, stock: 40, desc: 'Деревянные пяльцы для вышивания.' },
+        { id: 'p16', name: 'Ткань костюмная', category: 'tkani', categoryName: 'Ткани', price: 1500, unit: 'метр', image: '👔', inStock: true, isNew: false, isPopular: true, stock: 25, desc: 'Классическая костюмная ткань.' }
     ],
     categories: [
         { id: 'tkani', name: 'Ткани', icon: '🧵' },
         { id: 'furnitura', name: 'Фурнитура', icon: '🪡' },
         { id: 'accessories', name: 'Аксессуары', icon: '✂️' }
-    ],
-    faq: [
-        { q: 'Как оформить заказ?', a: 'Выберите товары в каталоге, добавьте их в корзину, перейдите к оформлению заказа.' },
-        { q: 'Какие способы оплаты доступны?', a: 'Наличные, карта МИР, СБП.' },
-        { q: 'Как осуществляется доставка?', a: 'Почта России и СДЭК.' },
-        { q: 'Есть ли бесплатная доставка?', a: 'Да, при заказе от 5 000 ₽.' }
     ]
 };
 
-// ===== CLOUD API =====
-const API_BASE_URL = 'https://functions.yandexcloud.net/d4enevddtsdl324s0314';
 const DEFAULT_PRODUCT_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12','p13','p14','p15','p16'];
-
-async function loadCustomProducts() {
-    try {
-        const response = await fetch(API_BASE_URL + '/products');
-        if (response.ok) {
-            const data = await response.json();
-            const customProducts = data.customProducts || [];
-            localStorage.setItem('matreshka_products', JSON.stringify(customProducts));
-            const existingIds = STORE_DATA.products.map(p => p.id);
-            customProducts.forEach(p => {
-                if (!existingIds.includes(p.id)) {
-                    STORE_DATA.products.push(p);
-                }
-            });
-            console.log('☁️ Загружено товаров из облака:', customProducts.length);
-            return;
-        }
-    } catch (e) {
-        console.warn('☁️ Ошибка загрузки из облака:', e.message);
-    }
-    try {
-        const saved = localStorage.getItem('matreshka_products');
-        if (saved) {
-            const customProducts = JSON.parse(saved);
-            const existingIds = STORE_DATA.products.map(p => p.id);
-            customProducts.forEach(p => {
-                if (!existingIds.includes(p.id)) {
-                    STORE_DATA.products.push(p);
-                }
-            });
-        }
-    } catch (e) {}
-}
-
-async function saveCustomProducts() {
-    const customProducts = STORE_DATA.products.filter(p => !DEFAULT_PRODUCT_IDS.includes(p.id));
-    localStorage.setItem('matreshka_products', JSON.stringify(customProducts));
-    for (const product of customProducts) {
-        try {
-            const checkResponse = await fetch(API_BASE_URL + '/products');
-            if (checkResponse.ok) {
-                const data = await checkResponse.json();
-                const existing = (data.customProducts || []).find(p => p.id === product.id);
-                if (existing) {
-                    await fetch(API_BASE_URL + '/products/' + product.id, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ product })
-                    });
-                } else {
-                    await fetch(API_BASE_URL + '/products', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ product })
-                    });
-                }
-            }
-        } catch (e) {
-            console.warn('☁️ Ошибка синхронизации:', product.name, e.message);
-        }
-    }
-}
 
 // ===== STATE =====
 const state = {
@@ -125,24 +55,6 @@ function saveState() {
     localStorage.setItem('matreshka_wishlist', JSON.stringify(state.wishlist));
 }
 
-// ===== NAVIGATION =====
-function navigateTo(page) {
-    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-    const target = document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1));
-    if (target) {
-        target.style.display = 'block';
-        state.currentPage = page;
-    }
-    document.querySelectorAll('.nav-list a').forEach(a => {
-        a.classList.toggle('active', a.dataset.page === page);
-    });
-    closeCart();
-    closeAuthModal();
-    if (page === 'catalog') renderCatalog();
-    if (page === 'profile') renderProfile();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
 function showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -151,9 +63,23 @@ function showToast(message, type = 'info') {
     container.appendChild(toast);
     setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
         setTimeout(() => toast.remove(), 300);
     }, 3000);
+}
+
+// ===== NAVIGATION =====
+function navigateTo(page) {
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    const target = document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1));
+    if (target) target.style.display = 'block';
+    document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.dataset.page === page);
+    });
+    closeCart();
+    closeAuthModal();
+    if (page === 'catalog') renderCatalog();
+    if (page === 'profile') renderProfile();
+    window.scrollTo({ top: 0 });
 }
 
 // ===== AUTH =====
@@ -163,13 +89,8 @@ function openAuthModal(tab) {
 }
 function closeAuthModal() { document.getElementById('authModal').classList.remove('active'); }
 function showAuthTab(tab) {
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const tabs = document.querySelectorAll('.auth-tab');
-    tabs.forEach(t => {
-        t.style.background = t.dataset.tab === tab ? 'var(--primary)' : 'var(--gray-100)';
-        t.style.color = t.dataset.tab === tab ? 'var(--white)' : 'var(--gray-700)';
-    });
+    const loginForm = document.querySelector('#authModal form:first-of-type');
+    const registerForm = document.querySelector('#authModal form:last-of-type');
     if (tab === 'login') {
         loginForm.style.display = 'block';
         registerForm.style.display = 'none';
@@ -190,10 +111,10 @@ function handleRegister(e) {
     if (password !== confirm) { showToast('Пароли не совпадают', 'error'); return; }
     const users = JSON.parse(localStorage.getItem('matreshka_users') || '[]');
     if (users.find(u => u.phone === phone)) { showToast('Телефон уже зарегистрирован', 'error'); return; }
-    const user = { id: 'u' + Date.now(), name, phone, password, bonus: 0, addresses: [] };
+    const user = { id: 'u' + Date.now(), name, phone, password, bonus: 0 };
     users.push(user);
     localStorage.setItem('matreshka_users', JSON.stringify(users));
-    state.user = { id: user.id, name: user.name, phone: user.phone, bonus: user.bonus, addresses: user.addresses };
+    state.user = { id: user.id, name: user.name, phone: user.phone, bonus: 0 };
     saveState();
     updateUI();
     closeAuthModal();
@@ -208,7 +129,7 @@ function handleLogin(e) {
     const users = JSON.parse(localStorage.getItem('matreshka_users') || '[]');
     const user = users.find(u => u.phone === phone && u.password === password);
     if (!user) { showToast('Неверный телефон или пароль', 'error'); return; }
-    state.user = { id: user.id, name: user.name, phone: user.phone, bonus: user.bonus || 0, addresses: user.addresses || [] };
+    state.user = { id: user.id, name: user.name, phone: user.phone, bonus: user.bonus || 0 };
     saveState();
     updateUI();
     closeAuthModal();
@@ -226,13 +147,9 @@ function logout() {
 function getCartCount() { return state.cart.reduce((sum, item) => sum + item.qty, 0); }
 function openCart() {
     document.getElementById('cartSidebar').classList.add('active');
-    document.getElementById('cartOverlay').style.display = 'block';
     renderCart();
 }
-function closeCart() {
-    document.getElementById('cartSidebar').classList.remove('active');
-    document.getElementById('cartOverlay').style.display = 'none';
-}
+function closeCart() { document.getElementById('cartSidebar').classList.remove('active'); }
 function addToCart(productId) {
     const product = STORE_DATA.products.find(p => p.id === productId);
     if (!product) return;
@@ -261,7 +178,7 @@ function renderCart() {
     const container = document.getElementById('cartItems');
     const totalEl = document.getElementById('cartTotal');
     if (state.cart.length === 0) {
-        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-500)"><div style="font-size:48px">🛒</div><p>Корзина пуста</p></div>';
+        container.innerHTML = '<div style="text-align:center;padding:40px">Корзина пуста</div>';
         totalEl.textContent = '0 ₽';
         return;
     }
@@ -271,9 +188,9 @@ function renderCart() {
         if (!product) return '';
         const subtotal = product.price * item.qty;
         total += subtotal;
-        return `<div class="cart-item"><div class="cart-item-image">${product.image}</div><div class="cart-item-info"><div class="cart-item-title">${product.name}</div><div class="cart-item-price">${subtotal} ₽</div><div class="cart-item-actions"><button class="cart-qty-btn" onclick="updateCartQty('${product.id}', -1)">−</button><span class="cart-qty">${item.qty}</span><button class="cart-qty-btn" onclick="updateCartQty('${product.id}', 1)">+</button><button class="cart-item-remove" onclick="removeFromCart('${product.id}')">🗑️</button></div></div></div>`;
+        return `<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee"><div style="font-size:32px">${product.image}</div><div style="flex:1"><div><strong>${product.name}</strong></div><div>${product.price} ₽ × ${item.qty}</div><div><button onclick="updateCartQty('${product.id}', -1)">-</button> <span>${item.qty}</span> <button onclick="updateCartQty('${product.id}', 1)">+</button> <button onclick="removeFromCart('${product.id}')">🗑️</button></div></div><div><strong>${subtotal} ₽</strong></div></div>`;
     }).join('');
-    totalEl.textContent = total.toLocaleString() + ' ₽';
+    totalEl.textContent = total + ' ₽';
 }
 
 // ===== CHECKOUT =====
@@ -292,20 +209,19 @@ function renderCheckout() {
         if (!product) return '';
         const subtotal = product.price * item.qty;
         total += subtotal;
-        return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100)"><span>${product.image} ${product.name} × ${item.qty}</span><span>${subtotal} ₽</span></div>`;
+        return `<div>${product.name} × ${item.qty} = ${subtotal} ₽</div>`;
     }).join('');
-    container.innerHTML = `<div class="checkout-layout"><div><div class="checkout-section"><h3>Состав заказа</h3>${itemsHtml}<div style="display:flex;justify-content:space-between;padding:16px 0;font-size:20px;font-weight:800"><span>Итого:</span><span style="color:var(--primary)">${total} ₽</span></div></div><div class="checkout-section"><h3>Адрес доставки</h3><input type="text" id="checkoutStreet" placeholder="Улица"><input type="text" id="checkoutHouse" placeholder="Дом"></div><div class="checkout-section"><h3>Способ оплаты</h3><label><input type="radio" name="paymentMethod" value="cash" checked> Наличные</label><label><input type="radio" name="paymentMethod" value="mir"> Карта МИР</label></div></div><div><div class="checkout-section"><h3>Подтверждение</h3><button class="btn btn-primary" onclick="placeOrder()">Подтвердить заказ</button></div></div></div>`;
+    container.innerHTML = `<div><h3>Ваш заказ</h3>${itemsHtml}<hr><div><strong>Итого: ${total} ₽</strong></div><input type="text" id="checkoutAddress" placeholder="Адрес доставки" style="width:100%;padding:10px;margin:10px 0"><button class="btn btn-primary" onclick="placeOrder()">Подтвердить заказ</button></div>`;
 }
 function placeOrder() {
-    const street = document.getElementById('checkoutStreet')?.value || '';
-    const house = document.getElementById('checkoutHouse')?.value || '';
-    if (!street || !house) { showToast('Заполните адрес', 'error'); return; }
+    const address = document.getElementById('checkoutAddress')?.value || '';
+    if (!address) { showToast('Введите адрес', 'error'); return; }
     let total = 0;
     state.cart.forEach(item => {
         const product = STORE_DATA.products.find(p => p.id === item.id);
         if (product) total += product.price * item.qty;
     });
-    const order = { id: 'ORD-' + Date.now(), date: new Date().toISOString(), user: { id: state.user.id, name: state.user.name, phone: state.user.phone }, items: [...state.cart], total: total, status: 'new' };
+    const order = { id: 'ORD-' + Date.now(), date: new Date().toISOString(), user: { id: state.user.id, name: state.user.name }, items: [...state.cart], total: total, address: address, status: 'new' };
     const orders = JSON.parse(localStorage.getItem('matreshka_orders') || '[]');
     orders.push(order);
     localStorage.setItem('matreshka_orders', JSON.stringify(orders));
@@ -322,16 +238,33 @@ function renderProfile() {
     document.getElementById('profileAvatar').textContent = state.user.name.charAt(0).toUpperCase();
     document.getElementById('profileName').textContent = state.user.name;
     document.getElementById('profilePhone').textContent = state.user.phone;
-    document.getElementById('profileBonus').textContent = state.user.bonus || 0;
-    const orders = JSON.parse(localStorage.getItem('matreshka_orders') || '[]');
-    const userOrders = orders.filter(o => o.user?.id === state.user?.id);
-    const container = document.getElementById('profileOrders');
-    if (userOrders.length === 0) container.innerHTML = '<p>Заказов нет</p>';
-    else container.innerHTML = userOrders.map(o => `<div>#${o.id} - ${o.total} ₽ - ${o.status}</div>`).join('');
+    renderProfileOrders();
+    renderProfileWishlist();
 }
 function showProfileTab(tab) {
     document.querySelectorAll('.profile-tab').forEach(t => t.style.display = 'none');
     document.getElementById('profileTab' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
+    document.querySelectorAll('.profile-nav-item').forEach(i => i.classList.remove('active'));
+    event.target.classList.add('active');
+}
+function renderProfileOrders() {
+    const container = document.getElementById('profileOrders');
+    const orders = JSON.parse(localStorage.getItem('matreshka_orders') || '[]');
+    const userOrders = orders.filter(o => o.user?.id === state.user?.id);
+    if (userOrders.length === 0) { container.innerHTML = '<p>Заказов нет</p>'; return; }
+    container.innerHTML = userOrders.map(o => `<div style="border:1px solid #eee;padding:12px;margin:8px 0">#${o.id} - ${o.total} ₽ - ${o.status}<br>${o.address}</div>`).join('');
+}
+function renderProfileWishlist() {
+    const container = document.getElementById('profileWishlist');
+    const wishlistProducts = STORE_DATA.products.filter(p => state.wishlist.includes(p.id));
+    if (wishlistProducts.length === 0) { container.innerHTML = '<p>Избранного нет</p>'; return; }
+    container.innerHTML = wishlistProducts.map(p => `<div style="border:1px solid #eee;padding:12px;margin:8px 0">${p.name} - ${p.price} ₽ <button onclick="removeFromWishlist('${p.id}')">Удалить</button></div>`).join('');
+}
+function removeFromWishlist(productId) {
+    state.wishlist = state.wishlist.filter(id => id !== productId);
+    saveState();
+    renderProfileWishlist();
+    renderCatalog();
 }
 function toggleWishlist(productId) {
     const idx = state.wishlist.indexOf(productId);
@@ -344,19 +277,19 @@ function toggleWishlist(productId) {
 // ===== CATALOG =====
 function renderCatalog() {
     const grid = document.getElementById('catalogGrid');
-    const count = document.getElementById('catalogCount');
+    const countSpan = document.getElementById('catalogCount');
     if (!grid) return;
     let products = [...STORE_DATA.products];
-    if (state.currentCategory && state.currentCategory !== 'all') products = products.filter(p => p.category === state.currentCategory);
-    count.textContent = 'Найдено: ' + products.length;
+    if (state.currentCategory !== 'all') products = products.filter(p => p.category === state.currentCategory);
+    if (countSpan) countSpan.textContent = `Найдено: ${products.length}`;
     if (products.length === 0) { grid.innerHTML = '<p>Товары не найдены</p>'; return; }
-    grid.innerHTML = products.map(p => `<div class="product-card"><div class="product-image" onclick="openProductDetail('${p.id}')">${p.image}</div><div class="product-info"><div class="product-title">${p.name}</div><div class="product-price">${p.price} ₽</div><button class="btn-add-cart" onclick="addToCart('${p.id}')">В корзину</button></div></div>`).join('');
+    grid.innerHTML = products.map(p => `<div class="product-card"><div class="product-image" onclick="openProductDetail('${p.id}')">${p.image}</div><div class="product-title">${p.name}</div><div class="product-price">${p.price} ₽</div><button class="btn-add-cart" onclick="addToCart('${p.id}')">🛒 В корзину</button></div>`).join('');
 }
 function applyFilters() { renderCatalog(); }
 function openProductDetail(productId) {
     const product = STORE_DATA.products.find(p => p.id === productId);
     if (!product) return;
-    document.getElementById('productDetailContent').innerHTML = `<h2>${product.name}</h2><p>${product.price} ₽</p><p>${product.desc}</p><button onclick="addToCart('${product.id}')">В корзину</button>`;
+    document.getElementById('productDetailContent').innerHTML = `<h2>${product.name}</h2><div style="font-size:64px;text-align:center">${product.image}</div><p>${product.desc || 'Описание отсутствует'}</p><p><strong>${product.price} ₽</strong> / ${product.unit}</p><button class="btn btn-primary" onclick="addToCart('${product.id}');closeProductModal()">В корзину</button>`;
     document.getElementById('productModal').classList.add('active');
 }
 function closeProductModal() { document.getElementById('productModal').classList.remove('active'); }
@@ -364,35 +297,15 @@ function renderPopularProducts() {
     const container = document.getElementById('productsGrid');
     if (!container) return;
     const popular = STORE_DATA.products.filter(p => p.isPopular).slice(0, 8);
-    container.innerHTML = popular.map(p => `<div class="product-card"><div class="product-image" onclick="openProductDetail('${p.id}')">${p.image}</div><div class="product-info"><div class="product-title">${p.name}</div><div class="product-price">${p.price} ₽</div><button onclick="addToCart('${p.id}')">В корзину</button></div></div>`).join('');
-}
-function renderFAQ() {
-    const container = document.getElementById('faqList');
-    if (!container) return;
-    container.innerHTML = STORE_DATA.faq.map((item, i) => `<div><strong>${item.q}</strong><p>${item.a}</p></div>`).join('');
+    container.innerHTML = popular.map(p => `<div class="product-card"><div class="product-image" onclick="openProductDetail('${p.id}')">${p.image}</div><div class="product-title">${p.name}</div><div class="product-price">${p.price} ₽</div><button class="btn-add-cart" onclick="addToCart('${p.id}')">В корзину</button></div>`).join('');
 }
 function handleSearch(e) {
     e.preventDefault();
     const query = document.getElementById('searchInput').value.trim().toLowerCase();
     if (!query) return;
-    const results = STORE_DATA.products.filter(p => p.name.toLowerCase().includes(query));
+    const results = STORE_DATA.products.filter(p => p.name.toLowerCase().includes(query) || p.categoryName.toLowerCase().includes(query));
     if (results.length === 0) showToast('Ничего не найдено', 'info');
-    else { state.currentCategory = 'all'; navigateTo('catalog'); renderCatalog(); }
-}
-function calculateDelivery() {
-    const total = parseFloat(document.getElementById('calcTotal')?.value) || 0;
-    const result = document.getElementById('deliveryResult');
-    if (total >= 5000) result.innerHTML = '<p>Бесплатная доставка!</p>';
-    else result.innerHTML = '<p>Стоимость доставки от 300 ₽</p>';
-}
-function toggleChat() { document.getElementById('chatWindow').classList.toggle('active'); }
-function sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-    document.getElementById('chatMessages').innerHTML += '<div class="chat-msg user">' + text + '</div>';
-    input.value = '';
-    setTimeout(() => { document.getElementById('chatMessages').innerHTML += '<div class="chat-msg support">Спасибо, мы ответим вам!</div>'; }, 1000);
+    else { state.currentCategory = 'all'; navigateTo('catalog'); document.getElementById('catalogGrid').innerHTML = results.map(p => `<div class="product-card"><div>${p.name}</div></div>`).join(''); }
 }
 
 // ===== ADMIN =====
@@ -426,12 +339,12 @@ function showAdminTab(tab) {
     document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
     document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
     document.getElementById('adminTab' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
-    document.querySelector(`.admin-tab[data-admin-tab="${tab}"]`).classList.add('active');
+    event.target.classList.add('active');
 }
 function renderAdminProducts() {
     const container = document.getElementById('adminProductsList');
     if (!container) return;
-    container.innerHTML = STORE_DATA.products.map((p, index) => `<div><strong>${p.name}</strong> - ${p.price} ₽ <button onclick="editProduct(${index})">Ред</button> <button onclick="deleteProduct(${index})">Уд</button></div>`).join('');
+    container.innerHTML = STORE_DATA.products.map((p, index) => `<div class="admin-product-card"><div style="font-size:32px">${p.image}</div><div><strong>${p.name}</strong></div><div>${p.price} ₽</div><button onclick="editProduct(${index})">✏️ Ред</button> <button onclick="deleteProduct(${index})">🗑️ Уд</button></div>`).join('');
 }
 function showAddProductForm() { document.getElementById('adminProductForm').style.display = 'block'; }
 function hideProductForm() { document.getElementById('adminProductForm').style.display = 'none'; }
@@ -453,23 +366,16 @@ function saveProduct(e) {
         category: 'tkani',
         categoryName: 'Ткани',
         price: Number(form.querySelector('[name="pPrice"]').value),
-        unit: 'за шт',
+        unit: 'шт',
         desc: '',
         image: '📦',
-        composition: '—',
-        width: '—',
-        density: '—',
-        care: '—',
-        color: '—',
-        type: '—',
-        stock: 10,
         inStock: true,
         isNew: false,
-        isPopular: false
+        isPopular: false,
+        stock: 10
     };
-    if (editIndex) STORE_DATA.products[parseInt(editIndex)] = product;
+    if (editIndex !== undefined && editIndex !== '') STORE_DATA.products[parseInt(editIndex)] = product;
     else STORE_DATA.products.push(product);
-    saveCustomProducts();
     hideProductForm();
     renderAdminProducts();
     renderCatalog();
@@ -477,69 +383,45 @@ function saveProduct(e) {
     showToast('Товар сохранён', 'success');
 }
 function deleteProduct(index) {
-    if (!confirm('Удалить?')) return;
+    if (!confirm('Удалить товар?')) return;
     STORE_DATA.products.splice(index, 1);
-    saveCustomProducts();
     renderAdminProducts();
     renderCatalog();
     renderPopularProducts();
+    showToast('Товар удалён', 'success');
 }
 function renderAdminOrders() {
     const container = document.getElementById('adminOrdersList');
     if (!container) return;
     const orders = JSON.parse(localStorage.getItem('matreshka_orders') || '[]');
-    container.innerHTML = orders.map(o => `<div>#${o.id} - ${o.total} ₽ - ${o.status}</div>`).join('');
+    container.innerHTML = orders.map(o => `<div style="border:1px solid #eee;padding:12px;margin:8px 0">#${o.id} - ${o.total} ₽ - ${o.status} - ${o.address}</div>`).join('');
 }
-function updateOrderStatus(orderId, newStatus) {
-    const orders = JSON.parse(localStorage.getItem('matreshka_orders') || '[]');
-    const order = orders.find(o => o.id === orderId);
-    if (order) { order.status = newStatus; localStorage.setItem('matreshka_orders', JSON.stringify(orders)); renderAdminOrders(); }
-}
-function deleteOrder(orderId) {
-    if (!confirm('Удалить заказ?')) return;
-    const orders = JSON.parse(localStorage.getItem('matreshka_orders') || '[]');
-    localStorage.setItem('matreshka_orders', JSON.stringify(orders.filter(o => o.id !== orderId)));
-    renderAdminOrders();
-}
-function filterAdminOrders() { renderAdminOrders(); }
-function exportOrders() { alert('Экспорт заказов'); }
 
 // ===== СИНХРОНИЗАЦИЯ =====
 async function syncWithCloud() {
     showToast('🔄 Синхронизация...', 'info');
-    await loadCustomProducts();
-    renderCatalog();
-    renderPopularProducts();
-    if (document.getElementById('adminProductsList')) renderAdminProducts();
     showToast('✅ Синхронизация завершена', 'success');
 }
 
 // ===== UI UPDATE =====
 function updateUI() {
     const count = getCartCount();
-    document.querySelectorAll('.cart-badge').forEach(el => {
-        el.textContent = count;
-        el.style.display = count > 0 ? 'flex' : 'none';
-    });
+    const badge = document.getElementById('cartBadge');
+    if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    }
     const authBtns = document.getElementById('authButtons');
-    if (state.user) authBtns.innerHTML = `<button onclick="navigateTo('profile')">👤</button><button onclick="logout()">🚪</button>`;
-    else authBtns.innerHTML = `<button onclick="openAuthModal('login')">👤</button>`;
-}
-function applyLogo(url) {
-    if (!url) return;
-    const logoImg = document.getElementById('logoImg');
-    if (logoImg) { logoImg.src = url; logoImg.style.display = 'block'; document.getElementById('logoSvg').style.display = 'none'; }
+    if (authBtns) {
+        if (state.user) authBtns.innerHTML = `<button onclick="navigateTo('profile')">👤</button><button onclick="logout()">🚪</button>`;
+        else authBtns.innerHTML = `<button onclick="openAuthModal('login')">👤</button>`;
+    }
 }
 
 // ===== INIT =====
 loadState();
-(async function initApp() {
-    await loadCustomProducts();
-    document.addEventListener('DOMContentLoaded', function() {
-        renderPopularProducts();
-        renderFAQ();
-        updateUI();
-        if (!localStorage.getItem('matreshka_logo')) localStorage.setItem('matreshka_logo', 'https://s3.radikal.cloud/2026/06/12/i-171370a0c13fcb6db.webp');
-        console.log('МАТРЁШКА загружена');
-    });
-})();
+document.addEventListener('DOMContentLoaded', function() {
+    renderPopularProducts();
+    updateUI();
+    console.log('МАТРЁШКА загружена');
+});
