@@ -39,8 +39,7 @@ const STORE_DATA = {
 // ===== ОБЛАЧНОЕ ХРАНИЛИЩЕ JSONBin.io
  =====
 const BIN_ID = '6a2cfb00da38895dfeb90e82';        
-const API_KEY = '
-$2a$10$5McJfpcFUclQsaTwtdmbteWHlI8hMm3iH.7lfkPVnomXp5SjikLNW'; 
+const API_KEY = '$2a$10$5McJfpcFUclQsaTwtdmbteWHlI8hMm3iH.7lfkPVnomXp5SjikLNW'; 
 const API_BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 const DEFAULT_PRODUCT_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12','p13','p14','p15','p16'];
 
