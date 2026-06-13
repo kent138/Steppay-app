@@ -15,14 +15,48 @@ workflows:
     tasks:
       - name: deploy-api-task
         cubes:
-          - name: deploy-function
+          - name: get-iam-token
             env:
               ID_TOKEN: ${{ tokens.default-token.id_token }}
               YC_SA_ID: ${{ tokens.default-token.service_account_id }}
+            image: cr.yandex/sourcecraft/yc-iam:latest
+
+          - name: deploy-function
+            env:
+              YC_IAM_TOKEN: ${{ cubes.get-iam-token.outputs.IAM_TOKEN }}
               YC_FOLDER_ID: ${{ tokens.default-token.folder_id }}
               YC_FUNCTION_NAME: "matroshka-store-api"
               YC_FUNCTION_RUNTIME: "nodejs22"
               YC_FUNCTION_ENTRYPOINT: "index.handler"
               SOURCE_PATH: "./api"
-              PUBLIC: "true"
-            image: cr.yandex/sourcecraft/yc-function:latest
+              YC_SA_ID: ${{ tokens.default-token.service_account_id }}
+            image:
+              name: cr.yandex/sourcecraft/yc-cli:latest
+              entrypoint: ""
+            script:
+              - |
+                set -e
+                yc config set folder-id $YC_FOLDER_ID
+                
+                # Create function if not exists
+                if ! yc serverless function get --name=$YC_FUNCTION_NAME 2>/dev/null; then
+                  yc serverless function create --name=$YC_FUNCTION_NAME
+                fi
+                
+                # Prepare source
+                mkdir -p ./tmp
+                cp "$SOURCE_PATH"/*.js* ./tmp
+                cp "$SOURCE_PATH"/package.json ./tmp 2>/dev/null || true
+                
+                # Deploy with service account
+                yc serverless function version create \
+                  --function-name=$YC_FUNCTION_NAME \
+                  --runtime $YC_FUNCTION_RUNTIME \
+                  --entrypoint $YC_FUNCTION_ENTRYPOINT \
+                  --execution-timeout 10s \
+                  --service-account-id $YC_SA_ID \
+                  --source-path ./tmp
+                
+                # Make public
+                yc serverless function allow-unauthenticated-invoke --name=$YC_FUNCTION_NAME
+                echo "✅ Deploy complete!"
