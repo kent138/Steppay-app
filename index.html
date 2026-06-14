@@ -489,6 +489,7 @@
         </aside>
         <div>
             <div class="catalog-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:24px"><h2>Каталог товаров</h2><div class="catalog-sort"><label>Сортировка:</label><select onchange="state.currentSort=this.value; renderCatalog()"><option value="popular">По популярности</option><option value="price-asc">По возрастанию цены</option><option value="price-desc">По убыванию цены</option><option value="new">Новинки</option></select></div></div>
+            <p id="catalogCount" style="margin-bottom:16px;color:var(--gray-500)"></p>
             <div id="catalogGrid" class="products-grid"></div>
         </div>
     </div>
