@@ -1,3 +1,13 @@
+console.log('✅ app.js начал загрузку');
+alert('app.js загружен!');
+
+// Проверка, что STORE_DATA существует
+if (typeof STORE_DATA !== 'undefined') {
+    console.log('✅ STORE_DATA загружен, товаров:', STORE_DATA.products.length);
+} else {
+    console.error('❌ STORE_DATA не загружен!');
+}
+
 // ===== STORE DATA =====
 const STORE_DATA = {
     products: [
