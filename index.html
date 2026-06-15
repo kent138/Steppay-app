@@ -1,661 +1,196 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>МАТРЁШКА — Магазин тканей и фурнитуры в Чите</title>
-    <meta name="description" content="Интернет-магазин тканей и фурнитуры МАТРЁШКА в Чите. Доставка по всей России. Качественные ткани, фурнитура, аксессуары для шитья и рукоделия.">
-    <meta name="keywords" content="ткани, фурнитура, магазин тканей, Чита, шитьё, рукоделие, ткани купить">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="МАТРЁШКА — Магазин тканей и фурнитуры">
-    <meta property="og:description" content="Качественные ткани и фурнитура из Читы с доставкой по всей России">
-    <meta property="og:type" content="website">
-    <meta property="og:locale" content="ru_RU">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#D32F2F">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="МАТРЁШКА">
-    
-    <style>
-        /* ===== CSS Variables & Reset ===== */
-        :root {
-            --primary: #D32F2F;
-            --primary-dark: #B71C1C;
-            --primary-light: #FF5252;
-            --black: #212121;
-            --black-light: #424242;
-            --white: #FFFFFF;
-            --gray-50: #FAFAFA;
-            --gray-100: #F5F5F5;
-            --gray-200: #EEEEEE;
-            --gray-300: #E0E0E0;
-            --gray-400: #BDBDBD;
-            --gray-500: #9E9E9E;
-            --gray-600: #757575;
-            --gray-700: #616161;
-            --gray-800: #424242;
-            --gray-900: #212121;
-            --success: #4CAF50;
-            --warning: #FF9800;
-            --danger: #F44336;
-            --info: #2196F3;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --font-main: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: var(--font-main); background: var(--gray-50); color: var(--black); line-height: 1.6; overflow-x: hidden; }
-        a { text-decoration: none; color: inherit; }
-        ul { list-style: none; }
-        button { cursor: pointer; border: none; outline: none; font-family: inherit; }
-        input, textarea, select { font-family: inherit; outline: none; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--gray-100); }
-        ::-webkit-scrollbar-thumb { background: var(--gray-400); border-radius: 4px; }
-
-        /* Header */
-        .header { position: sticky; top: 0; left: 0; right: 0; z-index: 1000; background: var(--white); box-shadow: var(--shadow-sm); transition: var(--transition); }
-        .header.scrolled { box-shadow: var(--shadow-md); }
-        .header-top { background: var(--black); color: var(--white); padding: 6px 0; font-size: 13px; }
-        .header-top .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .header-top-info { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-        .header-top-info span { display: flex; align-items: center; gap: 6px; }
-        .header-main { padding: 12px 0; }
-        .header-main .container { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 800; color: var(--black); flex-shrink: 0; }
-        .logo-icon { width: 48px; height: 48px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .logo-icon svg { width: 32px; height: 32px; fill: var(--white); }
-        .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
-        .logo-text span:first-child { font-size: 22px; letter-spacing: 1px; }
-        .logo-text span:last-child { font-size: 11px; color: var(--gray-500); font-weight: 400; letter-spacing: 2px; text-transform: uppercase; }
-        .search-bar { flex: 1; max-width: 500px; position: relative; }
-        .search-bar input { width: 100%; padding: 12px 20px; padding-right: 50px; border: 2px solid var(--gray-200); border-radius: 50px; font-size: 15px; background: var(--gray-50); transition: var(--transition); }
-        .search-bar input:focus { border-color: var(--primary); background: var(--white); }
-        .search-bar button { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); background: var(--primary); color: var(--white); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: var(--transition); }
-        .search-bar button:hover { background: var(--primary-dark); }
-        .header-actions { display: flex; align-items: center; gap: 8px; }
-        .header-actions button { background: none; padding: 10px; border-radius: 50%; font-size: 22px; color: var(--gray-700); position: relative; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
-        .header-actions button:hover { background: var(--gray-100); color: var(--primary); }
-        .header-actions .badge { position: absolute; top: 2px; right: 2px; background: var(--primary); color: var(--white); font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .nav { background: var(--white); border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200); overflow-x: auto; }
-        .nav .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-        .nav-list { display: flex; gap: 0; }
-        .nav-list li a { display: block; padding: 14px 20px; font-size: 14px; font-weight: 500; color: var(--gray-700); transition: var(--transition); position: relative; white-space: nowrap; }
-        .nav-list li a::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background: var(--primary); transition: var(--transition); border-radius: 3px 3px 0 0; }
-        .nav-list li a:hover, .nav-list li a.active { color: var(--primary); }
-        .nav-list li a:hover::after, .nav-list li a.active::after { width: 60%; }
-        .nav-phone { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--black); font-size: 15px; }
-
-        /* Hero */
-        .hero { background: linear-gradient(135deg, var(--black) 0%, var(--primary-dark) 100%); color: var(--white); padding: 80px 0; position: relative; overflow: hidden; }
-        .hero .container { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-        .hero-content h1 { font-size: 48px; font-weight: 900; line-height: 1.1; margin-bottom: 16px; }
-        .hero-content h1 span { color: var(--primary-light); }
-        .hero-content p { font-size: 18px; color: rgba(255,255,255,0.8); margin-bottom: 32px; line-height: 1.7; }
-        .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 50px; font-size: 16px; font-weight: 600; transition: var(--transition); cursor: pointer; border: none; }
-        .btn-primary { background: var(--primary); color: var(--white); }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(211,47,47,0.4); }
-        .btn-outline { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.3); }
-        .btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.1); transform: translateY(-2px); }
-        .hero-image-placeholder { width: 100%; max-width: 400px; aspect-ratio: 1; background: rgba(255,255,255,0.1); border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; border: 2px dashed rgba(255,255,255,0.2); padding: 40px; text-align: center; margin: 0 auto; }
-
-        /* Features */
-        .features-strip { background: var(--white); padding: 30px 0; border-bottom: 1px solid var(--gray-200); }
-        .features-strip .container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-        .feature-item { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: var(--radius-sm); transition: var(--transition); }
-        .feature-item:hover { background: var(--gray-50); }
-        .feature-icon { width: 48px; height: 48px; background: var(--gray-100); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; color: var(--primary); }
-        .feature-text h4 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
-        .feature-text p { font-size: 13px; color: var(--gray-500); }
-
-        /* Sections */
-        .section { padding: 60px 0; }
-        .section-header { text-align: center; margin-bottom: 40px; }
-        .section-header h2 { font-size: 36px; font-weight: 800; margin-bottom: 12px; position: relative; display: inline-block; }
-        .section-header h2::after { content: ''; display: block; width: 60px; height: 4px; background: var(--primary); margin: 12px auto 0; border-radius: 2px; }
-        .section-header p { color: var(--gray-500); font-size: 16px; max-width: 600px; margin: 0 auto; }
-
-        /* Categories */
-        .categories-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-        .category-card { background: var(--white); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; text-align: center; padding: 40px; border: 1px solid var(--gray-200); transition: var(--transition); }
-        .category-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-        .category-image { font-size: 64px; margin-bottom: 16px; }
-        .category-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-        .category-card p { font-size: 14px; color: var(--gray-600); }
-
-        /* Products */
-        .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-        .product-card { background: var(--white); border-radius: var(--radius-md); overflow: hidden; transition: var(--transition); border: 1px solid var(--gray-200); position: relative; }
-        .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-        .product-badge { position: absolute; top: 12px; left: 12px; background: var(--primary); color: var(--white); padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600; z-index: 2; }
-        .product-badge.new { background: var(--success); }
-        .product-image { width: 100%; aspect-ratio: 1; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 48px; cursor: pointer; }
-        .product-image img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-md); }
-        .product-wishlist { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--gray-400); transition: var(--transition); box-shadow: var(--shadow-sm); z-index: 2; cursor: pointer; border: none; }
-        .product-wishlist.active { color: var(--primary); }
-        .product-info { padding: 16px; }
-        .product-category { font-size: 12px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .product-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-        .product-price { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-        .product-price .current { font-size: 20px; font-weight: 800; color: var(--primary); }
-        .product-price .unit { font-size: 13px; color: var(--gray-500); }
-        .product-actions { display: flex; gap: 8px; }
-        .btn-add-cart { flex: 1; padding: 10px 16px; background: var(--primary); color: var(--white); border-radius: 50px; font-size: 14px; font-weight: 600; transition: var(--transition); cursor: pointer; }
-        .btn-add-cart:hover { background: var(--primary-dark); }
-        .btn-detail { padding: 10px 16px; background: var(--gray-100); color: var(--gray-700); border-radius: 50px; font-size: 14px; font-weight: 500; transition: var(--transition); cursor: pointer; }
-
-        /* About */
-        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-        .about-content h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; }
-        .about-content h2 span { color: var(--primary); }
-        .about-content p { color: var(--gray-600); margin-bottom: 16px; font-size: 16px; line-height: 1.8; }
-        .about-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px; }
-        .about-stat { text-align: center; padding: 20px; background: var(--gray-50); border-radius: var(--radius-sm); }
-        .about-stat h3 { font-size: 32px; font-weight: 800; color: var(--primary); }
-        .about-stat p { font-size: 14px; color: var(--gray-500); margin-top: 4px; }
-        .about-image-placeholder { width: 100%; background: var(--gray-100); border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; border: 2px dashed var(--gray-300); padding: 40px; text-align: center; }
-
-        /* Reviews & Blog */
-        .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-        .review-card { background: var(--white); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--gray-200); }
-        .review-stars { color: #FFC107; font-size: 18px; margin-bottom: 12px; }
-        .review-text { color: var(--gray-600); font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
-        .review-author { display: flex; align-items: center; gap: 12px; }
-        .review-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--gray-200); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--gray-500); }
-        .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-        .blog-card { background: var(--white); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--gray-200); transition: var(--transition); }
-        .blog-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-        .blog-image { font-size: 48px; padding: 30px; text-align: center; }
-        .blog-content { padding: 20px; }
-        .blog-date { font-size: 13px; color: var(--gray-500); margin-bottom: 8px; }
-        .blog-link { color: var(--primary); display: inline-block; margin-top: 12px; font-weight: 600; }
-
-        /* Newsletter */
-        .newsletter { background: var(--black); color: var(--white); padding: 60px 0; }
-        .newsletter .container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-        .newsletter-content h2 { font-size: 32px; font-weight: 800; margin-bottom: 12px; }
-        .newsletter-form { display: flex; gap: 12px; }
-        .newsletter-form input { flex: 1; padding: 16px; border-radius: 50px; border: none; font-size: 16px; }
-        .newsletter-form button { padding: 16px 32px; background: var(--primary); color: var(--white); border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; transition: var(--transition); }
-        .newsletter-form button:hover { background: var(--primary-dark); }
-
-        /* Footer */
-        .footer { background: var(--black); color: var(--white); padding: 60px 0 0; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .footer-brand .logo { color: var(--white); margin-bottom: 16px; }
-        .footer-brand p { color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7; margin-bottom: 20px; }
-        .footer-social { display: flex; gap: 12px; }
-        .footer-social a { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 18px; transition: var(--transition); text-decoration: none; color: white; }
-        .footer-social a:hover { background: var(--primary); }
-        .footer h4 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
-        .footer-links li { margin-bottom: 12px; }
-        .footer-links a { color: rgba(255,255,255,0.6); font-size: 14px; transition: var(--transition); }
-        .footer-links a:hover { color: var(--primary); }
-        .footer-contact li { display: flex; gap: 12px; margin-bottom: 16px; color: rgba(255,255,255,0.6); font-size: 14px; }
-        .footer-contact .icon { font-size: 18px; flex-shrink: 0; color: var(--primary); }
-        .footer-bottom { padding: 20px 0; text-align: center; color: rgba(255,255,255,0.4); font-size: 13px; }
-
-        /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-overlay.active { display: flex; }
-        .modal { background: var(--white); border-radius: var(--radius-lg); width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 32px; position: relative; }
-        .modal-close { position: absolute; top: 16px; right: 16px; background: none; font-size: 24px; color: var(--gray-500); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--gray-700); }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 15px; transition: var(--transition); }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .btn-full { width: 100%; }
-
-        /* Cart Sidebar */
-        .cart-sidebar { position: fixed; top: 0; right: -400px; width: 400px; height: 100vh; background: var(--white); z-index: 2000; box-shadow: var(--shadow-lg); transition: right 0.3s ease; display: flex; flex-direction: column; }
-        .cart-sidebar.active { right: 0; }
-        .cart-sidebar-header { padding: 20px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
-        .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
-        .cart-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--gray-100); }
-        .cart-item-image { width: 80px; height: 80px; background: var(--gray-100); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; }
-        .cart-item-info { flex: 1; }
-        .cart-item-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-        .cart-item-price { font-size: 16px; font-weight: 700; color: var(--primary); }
-        .cart-item-actions { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
-        .cart-qty-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; cursor: pointer; }
-        .cart-sidebar-footer { padding: 20px; border-top: 1px solid var(--gray-200); }
-        .cart-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; margin-bottom: 16px; }
-        .cart-total span:last-child { color: var(--primary); }
-
-        /* Three Dots Menu */
-        .three-dots-menu { position: fixed; bottom: 24px; right: 24px; z-index: 1001; }
-        .three-dots-btn { width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: white; box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; font-size: 24px; border: none; cursor: pointer; }
-        .three-dots-dropdown { position: absolute; bottom: 60px; right: 0; background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); min-width: 220px; overflow: hidden; display: none; }
-        .three-dots-dropdown.active { display: block; }
-        .three-dots-dropdown button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 20px; background: none; font-size: 14px; color: var(--gray-700); transition: var(--transition); text-align: left; cursor: pointer; }
-        .three-dots-dropdown button:hover { background: var(--gray-50); color: var(--primary); }
-
-        /* Admin Panel */
-        .admin-panel { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--white); z-index: 3000; overflow-y: auto; display: none; }
-        .admin-panel.active { display: block; }
-        .admin-header { background: var(--black); color: var(--white); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
-        .admin-body { padding: 24px; max-width: 1200px; margin: 0 auto; }
-        .admin-tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--gray-200); padding-bottom: 12px; flex-wrap: wrap; }
-        .admin-tab { padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; color: var(--gray-600); background: none; cursor: pointer; transition: var(--transition); }
-        .admin-tab.active { background: var(--primary); color: var(--white); }
-        .admin-tab-content { display: none; }
-        .admin-tab-content:first-of-type { display: block; }
-        .admin-products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .admin-product-card { background: var(--gray-50); border-radius: var(--radius-sm); padding: 16px; border: 1px solid var(--gray-200); }
-        .admin-product-card .product-image { width: 100%; aspect-ratio: 1; background: var(--gray-200); border-radius: var(--radius-sm); margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; }
-        .admin-product-card .product-image img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); }
-        .admin-product-actions { display: flex; gap: 8px; margin-top: 12px; }
-        .admin-btn { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: none; }
-        .admin-btn-edit { background: var(--info); color: white; }
-        .admin-btn-delete { background: var(--danger); color: white; }
-        .admin-search { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .admin-search input, .admin-search select { padding: 10px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 14px; }
-
-        /* Toast */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 5000; display: flex; flex-direction: column; gap: 8px; }
-        .toast { padding: 16px 24px; border-radius: var(--radius-sm); color: var(--white); font-size: 14px; font-weight: 500; box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease; }
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--danger); }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-        /* Chat */
-        .chat-widget { position: fixed; bottom: 24px; left: 24px; z-index: 999; }
-        .chat-btn { width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: white; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-lg); cursor: pointer; border: none; }
-        .chat-window { position: fixed; bottom: 90px; left: 24px; width: 320px; max-height: 450px; background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: none; flex-direction: column; overflow: hidden; }
-        .chat-window.active { display: flex; }
-        .chat-header { background: var(--primary); color: white; padding: 12px 16px; display: flex; justify-content: space-between; }
-        .chat-messages { flex: 1; padding: 16px; overflow-y: auto; max-height: 300px; }
-        .chat-msg { margin-bottom: 12px; max-width: 85%; }
-        .chat-msg.support { background: var(--gray-100); padding: 10px 14px; border-radius: 16px 16px 16px 4px; font-size: 14px; }
-        .chat-msg.user { background: var(--primary); color: white; padding: 10px 14px; border-radius: 16px 16px 4px 16px; font-size: 14px; margin-left: auto; }
-        .chat-input-area { display: flex; padding: 12px; border-top: 1px solid var(--gray-200); gap: 8px; }
-        .chat-input-area input { flex: 1; padding: 10px; border: 1px solid var(--gray-200); border-radius: 50px; }
-        .chat-input-area button { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; border: none; cursor: pointer; }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .hero .container { grid-template-columns: 1fr; text-align: center; }
-            .hero-content h1 { font-size: 36px; }
-            .hero-buttons { justify-content: center; }
-            .hero-image { display: none; }
-            .features-strip .container { grid-template-columns: repeat(2, 1fr); }
-            .categories-grid { grid-template-columns: repeat(2, 1fr); }
-            .products-grid { grid-template-columns: repeat(2, 1fr); }
-            .about-grid { grid-template-columns: 1fr; }
-            .reviews-grid { grid-template-columns: 1fr; }
-            .blog-grid { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
-            .newsletter .container { grid-template-columns: 1fr; text-align: center; }
-        }
-        @media (max-width: 768px) {
-            .header-top { display: none; }
-            .header-main .container { flex-wrap: wrap; }
-            .search-bar { order: 3; max-width: 100%; flex-basis: 100%; margin-top: 10px; }
-            .nav-list { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .nav-list li a { white-space: nowrap; padding: 12px 16px; font-size: 13px; }
-            .nav-phone { display: none; }
-            .hero { padding: 40px 0; }
-            .hero-content h1 { font-size: 28px; }
-            .features-strip .container { grid-template-columns: 1fr; }
-            .categories-grid { grid-template-columns: 1fr; }
-            .products-grid { grid-template-columns: 1fr; }
-            .section-header h2 { font-size: 28px; }
-            .footer-grid { grid-template-columns: 1fr; }
-            .cart-sidebar { width: 100%; right: -100%; }
-            .three-dots-menu { bottom: 16px; right: 16px; }
-            .chat-widget { bottom: 16px; left: 16px; }
-            .chat-window { width: calc(100% - 32px); left: 16px; bottom: 80px; }
-            .form-row { grid-template-columns: 1fr; }
-            .newsletter-form { flex-direction: column; }
-        }
-    </style>
-</head>
-<body>
-
-<div id="toastContainer" class="toast-container"></div>
-
-<div class="three-dots-menu">
-    <button class="three-dots-btn" onclick="openAdminMenu()">⋮</button>
-    <div id="adminDropdown" class="three-dots-dropdown">
-        <button onclick="requestAdminAccess('catalog')"><span>📦</span> Редактировать каталог</button>
-        <button onclick="requestAdminAccess('orders')"><span>📋</span> Вход в модерацию</button>
-    </div>
-</div>
-
-<header class="header">
-    <div class="header-top">
-        <div class="container">
-            <div class="header-top-info">
-                <span>📍 г. Чита, ул. Бутина 44</span>
-                <span>📞 +7 (914) 359-27-67</span>
-            </div>
-            <div class="header-top-info">
-                <span>🕐 Пн-Пт: 9:00-19:00, Сб: 10:00-17:00</span>
-            </div>
-        </div>
-    </div>
-    <div class="header-main">
-        <div class="container">
-            <a href="#" class="logo" onclick="event.preventDefault(); navigateTo('home')">
-                <div class="logo-icon" id="logoIcon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="logoSvg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                        <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
-                        <circle cx="12" cy="12" r="2"/>
-                    </svg>
-                    <img id="logoImg" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%" alt="Логотип МАТРЁШКА">
-                </div>
-                <div class="logo-text">
-                    <span>МАТРЁШКА</span>
-                    <span>Магазин тканей и фурнитуры</span>
-                </div>
-            </a>
-            <form class="search-bar" onsubmit="handleSearch(event)">
-                <input type="text" id="searchInput" placeholder="Поиск тканей, фурнитуры...">
-                <button type="submit">🔍</button>
-            </form>
-            <div class="header-actions">
-                <button onclick="openCart()" style="position:relative">🛒<span class="badge cart-badge" style="display:none">0</span></button>
-                <div id="authButtons"><button onclick="openAuthModal('login')">👤</button></div>
-            </div>
-        </div>
-    </div>
-    <nav class="nav">
-        <div class="container">
-            <ul class="nav-list">
-                <li><a href="#" data-page="home" class="active" onclick="event.preventDefault(); navigateTo('home')">Главная</a></li>
-                <li><a href="#" data-page="catalog" onclick="event.preventDefault(); navigateTo('catalog')">Каталог</a></li>
-                <li><a href="#" data-page="delivery" onclick="event.preventDefault(); navigateTo('delivery')">Доставка и оплата</a></li>
-                <li><a href="#" data-page="about" onclick="event.preventDefault(); navigateTo('about')">О нас</a></li>
-                <li><a href="#" data-page="blog" onclick="event.preventDefault(); navigateTo('blog')">Блог</a></li>
-                <li><a href="#" data-page="faq" onclick="event.preventDefault(); navigateTo('faq')">FAQ</a></li>
-                <li><a href="#" data-page="contacts" onclick="event.preventDefault(); navigateTo('contacts')">Контакты</a></li>
-            </ul>
-            <div class="nav-phone">📞 +7 (914) 359-27-67</div>
-        </div>
-    </nav>
-</header>
-
-<div id="pageHome" class="page">
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>МАТРЁШКА<br><span>Ткани и фурнитура</span></h1>
-                <p>Интернет-магазин качественных тканей и фурнитуры в Чите с доставкой по всей России. Вдохновляем на творчество с 2019 года!</p>
-                <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary" onclick="event.preventDefault(); navigateTo('catalog')">🛍️ Перейти в каталог</a>
-                    <a href="#" class="btn btn-outline" onclick="event.preventDefault(); navigateTo('about')">📖 О магазине</a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="hero-image-placeholder" id="heroLogoPlaceholder">
-                    <svg viewBox="0 0 24 24" fill="white" width="80" height="80" id="heroLogoSvg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                        <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z"/>
-                    </svg>
-                    <img id="heroLogoImg" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:16px">
-                    <p id="heroLogoText">Клубок ниток — символ нашего магазина</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="features-strip">
-        <div class="container">
-            <div class="feature-item"><div class="feature-icon">🚚</div><div class="feature-text"><h4>Доставка по России</h4><p>Почта России и СДЭК</p></div></div>
-            <div class="feature-item"><div class="feature-icon">⭐</div><div class="feature-text"><h4>Высокое качество</h4><p>Только проверенные ткани</p></div></div>
-            <div class="feature-item"><div class="feature-icon">💰</div><div class="feature-text"><h4>Лучшие цены</h4><p>От производителей</p></div></div>
-            <div class="feature-item"><div class="feature-icon">🎁</div><div class="feature-text"><h4>Бонусная программа</h4><p>Копите бонусы с покупок</p></div></div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <div class="section-header"><h2>Категории товаров</h2><p>Всё для шитья и рукоделия в одном месте</p></div>
-            <div class="categories-grid">
-                <div class="category-card" onclick="state.currentCategory='tkani'; navigateTo('catalog')"><div class="category-image">🧵</div><h3>Ткани</h3><p>Хлопок, лён, шёлк, шерсть и более 20 видов</p></div>
-                <div class="category-card" onclick="state.currentCategory='furnitura'; navigateTo('catalog')"><div class="category-image">🪡</div><h3>Фурнитура</h3><p>Пуговицы, молнии, кружево, нитки</p></div>
-                <div class="category-card" onclick="state.currentCategory='accessories'; navigateTo('catalog')"><div class="category-image">✂️</div><h3>Аксессуары</h3><p>Ножницы, иглы, сантиметры и другие инструменты</p></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section" style="background:var(--white)">
-        <div class="container">
-            <div class="section-header"><h2>Популярные товары</h2><p>Что чаще всего покупают наши клиенты</p></div>
-            <div id="productsGrid" class="products-grid"></div>
-            <div style="text-align:center;margin-top:32px"><a href="#" class="btn btn-primary" onclick="event.preventDefault(); navigateTo('catalog')">Смотреть все товары →</a></div>
-        </div>
-    </section>
-
-    <section class="section about-section">
-        <div class="container">
-            <div class="about-grid">
-                <div class="about-content"><h2>О магазине <span>МАТРЁШКА</span></h2><p>Мы — команда увлечённых людей из Читы, которые любят шитьё и рукоделие. Наш магазин создан для тех, кто ценит качественные материалы и индивидуальный подход.</p><p>Мы тщательно отбираем ткани и фурнитуру, чтобы вы могли воплотить самые смелые творческие идеи. Каждый товар проверяется перед отправкой.</p><div class="about-stats"><div class="about-stat"><h3>500+</h3><p>Товаров</p></div><div class="about-stat"><h3>1000+</h3><p>Довольных клиентов</p></div><div class="about-stat"><h3>50+</h3><p>Городов доставки</p></div></div></div>
-                <div class="about-image"><div class="about-image-placeholder"><div style="font-size:64px">🧶</div><p>г. Чита, ул. Бутина 44</p></div></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <div class="section-header"><h2>Отзывы наших клиентов</h2><p>Что говорят о нас рукодельницы со всей России</p></div>
-            <div class="reviews-grid">
-                <div class="review-card"><div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">"Заказываю ткани уже второй раз. Отличное качество, быстрая доставка. Рекомендую!"</p><div class="review-author"><div class="review-avatar">Е</div><div><div class="review-name">Елена</div><div class="review-city">г. Москва</div></div></div></div>
-                <div class="review-card"><div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">"Прекрасный выбор фурнитуры! Нашла всё, что нужно для своего проекта. Спасибо!"</p><div class="review-author"><div class="review-avatar">А</div><div><div class="review-name">Анна</div><div class="review-city">г. Санкт-Петербург</div></div></div></div>
-                <div class="review-card"><div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">"Доставили в Новосибирск за 5 дней. Ткань просто шикарная, буду заказывать ещё!"</p><div class="review-author"><div class="review-avatar">О</div><div><div class="review-name">Ольга</div><div class="review-city">г. Новосибирск</div></div></div></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section" style="background:var(--white)">
-        <div class="container">
-            <div class="section-header"><h2>Блог о рукоделии</h2><p>Советы, тренды и вдохновение для творчества</p></div>
-            <div class="blog-grid">
-                <div class="blog-card"><div class="blog-image">☀️</div><div class="blog-content"><div class="blog-date">15 марта 2025</div><h3>Как выбрать ткань для летнего платья</h3><p>Советы по выбору идеальной ткани для летнего гардероба: от хлопка до льна.</p><a href="#" class="blog-link" onclick="event.preventDefault(); showToast('Читайте в нашем блоге!','info')">Читать далее →</a></div></div>
-                <div class="blog-card"><div class="blog-image">🧺</div><div class="blog-content"><div class="blog-date">10 марта 2025</div><h3>Уход за натуральными тканями</h3><p>Правила стирки и хранения натуральных тканей, чтобы они служили долго.</p><a href="#" class="blog-link" onclick="event.preventDefault(); showToast('Читайте в нашем блоге!','info')">Читать далее →</a></div></div>
-                <div class="blog-card"><div class="blog-image">🌟</div><div class="blog-content"><div class="blog-date">5 марта 2025</div><h3>Тренды в рукоделии 2025</h3><p>Самые популярные техники и материалы для handmade в этом сезоне.</p><a href="#" class="blog-link" onclick="event.preventDefault(); showToast('Читайте в нашем блоге!','info')">Читать далее →</a></div></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="newsletter">
-        <div class="container">
-            <div class="newsletter-content"><h2>Будьте в курсе новинок!</h2><p>Подпишитесь на новости и получайте информацию о новых поступлениях и акциях</p></div>
-            <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('Спасибо за подписку!','success')"><input type="text" placeholder="Ваше имя" required><button type="submit">Подписаться</button></form>
-        </div>
-    </section>
-</div>
-
-<div id="pageCatalog" class="page" style="display:none">
-    <div class="catalog-layout" style="display:grid;grid-template-columns:280px 1fr;gap:32px;padding:40px 20px;max-width:1200px;margin:0 auto">
-        <aside class="catalog-filters" style="background:white;padding:24px;border-radius:12px;border:1px solid #eee;height:fit-content">
-            <h3>🔍 Фильтры</h3>
-            <div class="filter-group"><h4>Категория</h4><div class="filter-options"><label><input type="radio" name="catFilter" value="all" checked onchange="state.currentCategory='all'; renderCatalog()"> Все</label><label><input type="radio" name="catFilter" value="tkani" onchange="state.currentCategory='tkani'; renderCatalog()"> 🧵 Ткани</label><label><input type="radio" name="catFilter" value="furnitura" onchange="state.currentCategory='furnitura'; renderCatalog()"> 🪡 Фурнитура</label><label><input type="radio" name="catFilter" value="accessories" onchange="state.currentCategory='accessories'; renderCatalog()"> ✂️ Аксессуары</label></div></div>
-            <div class="filter-group"><h4>Цена</h4><div class="filter-price" style="display:flex;gap:8px"><input type="number" id="priceMin" placeholder="от" onchange="applyFilters()"><span>—</span><input type="number" id="priceMax" placeholder="до" onchange="applyFilters()"></div></div>
-            <button class="btn btn-primary" onclick="applyFilters()" style="width:100%;margin-top:16px">Применить</button>
-        </aside>
-        <div>
-            <div class="catalog-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:24px"><h2>Каталог товаров</h2><div class="catalog-sort"><label>Сортировка:</label><select onchange="state.currentSort=this.value; renderCatalog()"><option value="popular">По популярности</option><option value="price-asc">По возрастанию цены</option><option value="price-desc">По убыванию цены</option><option value="new">Новинки</option></select></div></div>
-            <p id="catalogCount" style="margin-bottom:16px;color:var(--gray-500)"></p>
-            <div id="catalogGrid" class="products-grid"></div>
-        </div>
-    </div>
-</div>
-
-<div id="pageDelivery" class="page page-content" style="display:none"><div class="container" style="max-width:1200px;margin:0 auto;padding:40px 20px"><h1>🚚 Доставка и оплата</h1><p>Доставка по всей России: Почта России и СДЭК. Бесплатно от 5000 ₽.</p></div></div>
-<div id="pageAbout" class="page page-content" style="display:none"><div class="container"><h1>📖 О нас</h1><p>Магазин тканей и фурнитуры «МАТРЁШКА» из Читы. Качественные материалы для вашего творчества.</p></div></div>
-<div id="pageBlog" class="page page-content" style="display:none"><div class="container"><h1>📝 Блог</h1><p>Советы и вдохновение для творчества</p></div></div>
-<div id="pageFaq" class="page page-content" style="display:none"><div class="container"><h1>❓ FAQ</h1><div id="faqList"></div></div></div>
-<div id="pageContacts" class="page page-content" style="display:none"><div class="container"><h1>📞 Контакты</h1><p>📍 г. Чита, ул. Бутина 44<br>📞 +7 (914) 359-27-67</p></div></div>
-
-<div id="pageProfile" class="page" style="display:none">
-    <div class="profile-layout" style="display:grid;grid-template-columns:280px 1fr;gap:32px;padding:40px 20px;max-width:1200px;margin:0 auto">
-        <aside class="profile-sidebar" style="background:white;border-radius:12px;border:1px solid #eee;padding:24px">
-            <div class="profile-user" style="text-align:center"><div id="profileAvatar" class="profile-avatar" style="width:64px;height:64px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px">?</div><h4 id="profileName"></h4><p id="profilePhone"></p><div style="margin-top:12px;padding:8px 16px;background:var(--gray-50);border-radius:50px">🎁 Бонусов: <strong id="profileBonus">0</strong></div></div>
-            <div class="profile-nav" style="margin-top:20px"><button class="profile-nav-item active" data-profile-tab="orders" onclick="showProfileTab('orders')" style="display:block;width:100%;padding:12px;text-align:left;background:none;border:none;cursor:pointer;border-radius:8px">📋 Мои заказы</button><button class="profile-nav-item" data-profile-tab="wishlist" onclick="showProfileTab('wishlist')">❤️ Избранное</button><button class="profile-nav-item" data-profile-tab="addresses" onclick="showProfileTab('addresses')">📍 Адреса доставки</button><button class="profile-nav-item" data-profile-tab="settings" onclick="showProfileTab('settings')">⚙️ Настройки</button></div>
-        </aside>
-        <div class="profile-content" style="background:white;border-radius:12px;border:1px solid #eee;padding:32px">
-            <div id="profileTabOrders" class="profile-tab"><div id="profileOrders"></div></div>
-            <div id="profileTabWishlist" class="profile-tab" style="display:none"><div id="profileWishlist"></div></div>
-            <div id="profileTabAddresses" class="profile-tab" style="display:none"><div id="profileAddresses"></div><button class="btn btn-primary" onclick="addAddress()" style="margin-top:16px">+ Добавить адрес</button></div>
-            <div id="profileTabSettings" class="profile-tab" style="display:none"><button class="btn btn-primary" onclick="logout()">Выйти</button></div>
-        </div>
-    </div>
-</div>
-
-<div id="pageCheckout" class="page page-content" style="display:none"><div class="container"><h1>🛒 Оформление заказа</h1><div id="checkoutContent"></div></div></div>
-<div id="pageReturn" class="page page-content" style="display:none"><div class="container"><h1>🔄 Возврат и обмен</h1><p>Условия возврата товара</p></div></div>
-
-<footer class="footer">
-    <div class="container">
-        <div class="footer-grid">
-            <div class="footer-brand"><div class="logo" style="color:white;display:flex;align-items:center;gap:12px"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="white" width="32" height="32"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z"/></svg></div><div><span>МАТРЁШКА</span><span>Магазин тканей и фурнитуры</span></div></div><p>Качественные ткани и фурнитура из Читы с доставкой по всей России. Вдохновляем на творчество с 2019 года.</p><div class="footer-social"><a href="#" onclick="event.preventDefault(); showToast('Мы в соцсетях!','info')">ВК</a><a href="#" onclick="event.preventDefault(); showToast('Мы в соцсетях!','info')">TG</a><a href="#" onclick="event.preventDefault(); showToast('Мы в соцсетях!','info')">WA</a></div></div>
-            <div><h4>Каталог</h4><ul class="footer-links"><li><a href="#" onclick="event.preventDefault(); state.currentCategory='tkani'; navigateTo('catalog')">Ткани</a></li><li><a href="#" onclick="event.preventDefault(); state.currentCategory='furnitura'; navigateTo('catalog')">Фурнитура</a></li><li><a href="#" onclick="event.preventDefault(); state.currentCategory='accessories'; navigateTo('catalog')">Аксессуары</a></li><li><a href="#" onclick="event.preventDefault(); navigateTo('catalog')">Все товары</a></li></ul></div>
-            <div><h4>Информация</h4><ul class="footer-links"><li><a href="#" onclick="event.preventDefault(); navigateTo('about')">О нас</a></li><li><a href="#" onclick="event.preventDefault(); navigateTo('delivery')">Доставка и оплата</a></li><li><a href="#" onclick="event.preventDefault(); navigateTo('return')">Возврат и обмен</a></li><li><a href="#" onclick="event.preventDefault(); navigateTo('faq')">FAQ</a></li><li><a href="#" onclick="event.preventDefault(); navigateTo('blog')">Блог</a></li><li><a href="#" onclick="event.preventDefault(); navigateTo('contacts')">Контакты</a></li></ul></div>
-            <div><h4>Контакты</h4><ul class="footer-contact"><li><span class="icon">📍</span> г. Чита, ул. Бутина 44, помещение 1</li><li><span class="icon">📞</span> +7 (914) 359-27-67</li><li><span class="icon">🕐</span> Пн-Пт: 9:00-19:00<br>Сб: 10:00-17:00</li></ul></div>
-        </div>
-        <div class="footer-bottom"><p>© 2026 МАТРЁШКА — Магазин тканей и фурнитуры. Все права защищены.</p></div>
-    </div>
-</footer>
-
-<div id="authModal" class="modal-overlay">
-    <div class="modal"><button class="modal-close" onclick="closeAuthModal()">✕</button><h2>Личный кабинет</h2>
-        <div style="display:flex;gap:8px;margin-bottom:24px"><button class="auth-tab active" data-tab="login" onclick="showAuthTab('login')" style="flex:1;padding:10px;border-radius:8px;font-weight:600;background:var(--primary);color:white;border:none;cursor:pointer">Вход</button><button class="auth-tab" data-tab="register" onclick="showAuthTab('register')" style="flex:1;padding:10px;border-radius:8px;font-weight:600;background:var(--gray-100);color:var(--gray-700);border:none;cursor:pointer">Регистрация</button></div>
-        <div id="loginForm"><form onsubmit="handleLogin(event)"><div class="form-group"><label>Телефон</label><input type="tel" name="loginPhone" placeholder="+7 (___) ___-__-__" required></div><div class="form-group"><label>Пароль</label><input type="password" name="loginPassword" placeholder="Введите пароль" required></div><button type="submit" class="btn btn-primary btn-full">Войти</button></form></div>
-        <div id="registerForm" style="display:none"><form onsubmit="handleRegister(event)"><div class="form-group"><label>Имя</label><input type="text" name="regName" placeholder="Ваше имя" required></div><div class="form-group"><label>Телефон</label><input type="tel" name="regPhone" placeholder="+7 (___) ___-__-__" required></div><div class="form-group"><label>Пароль</label><input type="password" name="regPassword" placeholder="Не менее 6 символов" required></div><div class="form-group"><label>Подтвердите пароль</label><input type="password" name="regConfirm" placeholder="Повторите пароль" required></div><button type="submit" class="btn btn-primary btn-full">Зарегистрироваться</button></form></div>
-    </div>
-</div>
-
-<div id="passwordModal" class="modal-overlay">
-    <div class="modal" style="max-width:400px"><button class="modal-close" onclick="document.getElementById('passwordModal').classList.remove('active')">✕</button><h2>🔐 Введите пароль</h2><p style="text-align:center;margin-bottom:20px">Введите пароль для доступа к панели управления</p><div class="form-group"><label>Пароль</label><input type="password" id="passwordInput" placeholder="Введите пароль"></div><p id="passwordError" style="color:var(--danger);display:none">❌ Неверный пароль</p><button class="btn btn-primary btn-full" onclick="checkPassword()">Войти</button></div>
-</div>
-
-<div id="productModal" class="modal-overlay product-detail-modal"><div class="modal"><button class="modal-close" onclick="closeProductModal()">✕</button><div id="productDetailContent"></div></div></div>
-
-<div id="cartOverlay" class="modal-overlay" style="background:rgba(0,0,0,0.3);backdrop-filter:blur(2px);display:none" onclick="closeCart()"></div>
-<div id="cartSidebar" class="cart-sidebar">
-    <div class="cart-sidebar-header"><h3>🛒 Корзина</h3><button class="cart-sidebar-close" onclick="closeCart()">✕</button></div>
-    <div id="cartItems" class="cart-items"><div style="text-align:center;padding:40px"><div style="font-size:48px">🛒</div><p>Корзина пуста</p></div></div>
-    <div class="cart-sidebar-footer"><div class="cart-total"><span>Итого:</span><span id="cartTotal">0 ₽</span></div><button class="btn btn-primary btn-full" onclick="openCheckout()">✅ Оформить заказ</button></div>
-</div>
-
-<div class="chat-widget">
-    <div id="chatWindow" class="chat-window"><div class="chat-header"><h4>💬 Чат поддержки</h4><button class="chat-close" onclick="toggleChat()">✕</button></div><div id="chatMessages" class="chat-messages"><div class="chat-msg support">Здравствуйте! Чем мы можем вам помочь? 😊</div></div><div class="chat-input-area"><input type="text" id="chatInput" placeholder="Введите сообщение..."><button onclick="sendChatMessage()">➤</button></div></div>
-    <button class="chat-btn" onclick="toggleChat()">💬</button>
-</div>
-
-<div id="adminPanel" class="admin-panel">
-    <div class="admin-header"><h2>⚙️ Панель управления</h2><button class="admin-close" onclick="closeAdmin()">✕</button></div>
-    <div class="admin-body">
-        <div class="admin-tabs"><button class="admin-tab active" data-admin-tab="products" onclick="showAdminTab('products')">📦 Товары</button><button class="admin-tab" data-admin-tab="orders" onclick="showAdminTab('orders')">📋 Заказы</button></div>
-        
-        <div id="adminTabProducts" class="admin-tab-content">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-                <h3>Управление товарами</h3>
-                <div style="display:flex;gap:12px">
-                    <button class="btn btn-primary" onclick="showAddProductForm()">+ Добавить товар</button>
-                    <button class="btn" onclick="syncWithCloud()" style="background:var(--info);color:white">🔄 Синхронизация</button>
-                </div>
-            </div>
-
-            <div id="adminProductForm" style="display:none;background:var(--gray-50);padding:24px;border-radius:var(--radius-md);margin-bottom:24px">
-                <h4 style="margin-bottom:16px">Добавить/Редактировать товар</h4>
-                <form onsubmit="saveProduct(event)">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Название товара *</label>
-                            <input type="text" name="pName" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Категория *</label>
-                            <select name="pCategory" required>
-                                <option value="tkani">Ткани</option>
-                                <option value="furnitura">Фурнитура</option>
-                                <option value="accessories">Аксессуары</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Цена (₽) *</label>
-                            <input type="number" name="pPrice" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Единица измерения</label>
-                            <input type="text" name="pUnit" placeholder="за метр, за шт">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Описание</label>
-                        <textarea name="pDesc" rows="3"></textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Эмодзи-иконка</label>
-                            <input type="text" name="pImage" placeholder="🧵">
-                        </div>
-                        <div class="form-group">
-                            <label>📷 Загрузить фото</label>
-                            <input type="file" name="pImageFile" accept="image/*">
-                        </div>
-                        <div class="form-group">
-                            <label>Состав</label>
-                            <input type="text" name="pComposition" placeholder="100% хлопок">
-                        </div>
-                        <div class="form-group">
-                            <label>Ширина</label>
-                            <input type="text" name="pWidth" placeholder="150 см">
-                        </div>
-                        <div class="form-group">
-                            <label>Количество на складе</label>
-                            <input type="number" name="pStock" value="10">
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:16px;margin:16px 0;flex-wrap:wrap">
-                        <label><input type="checkbox" name="pInStock" checked> В наличии</label>
-                        <label><input type="checkbox" name="pIsNew"> Новинка</label>
-                        <label><input type="checkbox" name="pIsPopular"> Популярный</label>
-                    </div>
-                    <div style="display:flex;gap:12px">
-                        <button type="submit" class="btn btn-primary">💾 Сохранить товар</button>
-                        <button type="button" class="btn btn-dark" onclick="hideProductForm()">Отмена</button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="adminProductsList" class="admin-products-grid"></div>
-        </div>
-
-        <div id="adminTabOrders" class="admin-tab-content" style="display:none">
-            <h3>Управление заказами</h3>
-            <div class="admin-search">
-                <input type="text" id="adminOrderSearch" placeholder="🔍 Поиск по номеру, имени..." oninput="filterAdminOrders()">
-                <select id="adminOrderStatus" onchange="filterAdminOrders()">
-                    <option value="all">Все статусы</option>
-                    <option value="new">Новые</option>
-                    <option value="processing">В обработке</option>
-                    <option value="shipped">Отправлен</option>
-                    <option value="delivered">Доставлен</option>
-                    <option value="cancelled">Отменён</option>
-                </select>
-                <button class="btn btn-primary" onclick="exportOrders()">📥 Экспорт CSV</button>
-            </div>
-            <div id="adminOrdersList"></div>
-        </div>
-    </div>
-</div>
-
-<script src="js/app.js"></script>
-</body>
-</html>
+    2 <html lang="ru">
+    3 <head>
+    4     <meta charset="UTF-8">
+    5     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    6     <title>МАТРЁШКА - Магазин тканей и фурнитуры</title>
+    7     <link rel="stylesheet" href="assets/css/style.css">
+    8     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    9 </head>
+   10 <body>
+   11     <!-- Header -->
+   12     <header>
+   13         <div class="container">
+   14             <div class="logo">
+   15                 <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+   16                     <circle cx="20" cy="20" r="18" fill="#d32f2f"/>
+   17                     <path d="M20 8l4 12h3l-7 9-7-9h3z" fill="white"/>
+   18                 </svg>
+   19                 <span>МАТРЁШКА</span>
+   20             </div>
+   21             <nav>
+   22                 <ul>
+   23                     <li><a href="index.html">Главная</a></li>
+   24                     <li><a href="catalog.html">Каталог</a></li>
+   25                     <li><a href="about.html">О нас</a></li>
+   26                     <li><a href="blog.html">Блог</a></li>
+   27                     <li><a href="contacts.html">Контакты</a></li>
+   28                 </ul>
+   29             </nav>
+   30             <div class="header-actions">
+   31                 <a href="cart.html" class="cart-icon">
+   32                     <i class="fas fa-shopping-cart"></i>
+   33                     <span class="cart-count" id="cart-count">0</span>
+   34                 </a>
+   35                 <div class="user-menu">
+   36                     <i class="fas fa-user"></i>
+   37                     <div class="user-dropdown">
+   38                         <a href="account.html">Личный кабинет</a>
+   39                         <a href="account.html#login" id="login-link">Вход</a>
+   40                         <a href="account.html#register" id="register-link">Регистрация</a>
+   41                     </div>
+   42                 </div>
+   43                 <!-- Admin menu (three dots) -->
+   44                 <div class="admin-menu" id="admin-menu">
+   45                     <i class="fas fa-ellipsis-v"></i>
+   46                     <div class="admin-dropdown" id="admin-dropdown">
+   47                         <a href="#" id="edit-catalog-link">Редактировать каталог</a>
+   48                         <a href="#" id="moderation-link">Вход в модерацию</a>
+   49                     </div>
+   50                 </div>
+   51             </div>
+   52         </div>
+   53     </header>
+   54
+   55     <!-- Hero Banner -->
+   56     <section class="hero">
+   57         <div class="container">
+   58             <h1>МАТРЁШКА</h1>
+   59             <p>Качественные ткани и фурнитура из Читы с доставкой по всей России</p>
+   60             <a href="catalog.html" class="btn-primary">Перейти в каталог</a>
+   61         </div>
+   62     </section>
+   63
+   64     <!-- Categories -->
+   65     <section class="categories">
+   66         <div class="container">
+   67             <h2>Категории товаров</h2>
+   68             <div class="categories-grid">
+   69                 <a href="catalog.html?category=tkani" class="category-card">
+   70                     <i class="fas fa-fabric"></i>
+   71                     <h3>Ткани</h3>
+   72                     <p>Хлопок, лен, шелк, шерсть и многое другое</p>
+   73                 </a>
+   74                 <a href="catalog.html?category=furnitura" class="category-card">
+   75                     <i class="fas fa-sewing-needle"></i>
+   76                     <h3>Фурнитура</h3>
+   77                     <p>Пуговицы, молнии, ленты, тесьма</p>
+   78                 </a>
+   79                 <a href="catalog.html?category=aksessuary" class="category-card">
+   80                     <i class="fas fa-scissors"></i>
+   81                     <h3>Аксессуары</h3>
+   82                     <p>Ножницы, сантиметры, мелок, шпильки</p>
+   83                 </a>
+   84             </div>
+   85         </div>
+   86     </section>
+   87
+   88     <!-- Popular Products -->
+   89     <section class="popular">
+   90         <div class="container">
+   91             <h2>Популярные товары</h2>
+   92             <div class="products-grid" id="popular-products">
+   93                 <!-- Products will be loaded here by JavaScript -->
+   94             </div>
+   95         </div>
+   96     </section>
+   97
+   98     <!-- Advantages -->
+   99     <section class="advantages">
+  100         <div class="container">
+  101             <div class="advantages-grid">
+  102                 <div class="advantage">
+  103                     <i class="fas fa-truck"></i>
+  104                     <h3>Доставка по России</h3>
+  105                     <p>Быстрая и надежная доставка в любой регион</p>
+  106                 </div>
+  107                 <div class="advantage">
+  108                     <i class="fas fa-star"></i>
+  109                     <h3>Качество гарантировано</h3>
+  110                     <p>Только проверенные поставщики и материалы</p>
+  111                 </div>
+  112                 <div class="advantage">
+  113                     <i class="fas fa-tag"></i>
+  114                     <h3>Выгодные цены</h3>
+  115                     <p>Прямые поставки без посредников</p>
+  116                 </div>
+  117                 <div class="advantage">
+  118                     <i class="fas fa-map-marker-alt"></i>
+  119                     <h3>Из города Чита</h3>
+  120                     <p>Местное производство с любовью к рукоделию</p>
+  121                 </div>
+  122             </div>
+  123         </div>
+  124     </section>
+  125
+  126     <!-- About Store -->
+  127     <section class="about-store">
+  128         <div class="container">
+  129             <h2>О магазине МАТРЁШКА</h2>
+  130             <p>Мы - магазин тканей и фурнитуры из города Чита, специализирующийся на поставке качественных мате
+      риалов для рукоделия, шитья и дизайна одежды по всей России. Наша миссия - сделать творчество доступным и прият
+      ным для каждого.</p>
+  131             <p>В нашем ассортименте вы найдете:</p>
+  132             <ul>
+  133                 <li>Натуральные и синтетические ткани различного состава и плотности</li>
+  134                 <li>Широкий выбор фурнитуры для шитья и декора</li>
+  135                 <li>Аксессуары для рукоделия высокого качества</li>
+  136             </ul>
+  137             <p>Мы предлагаем индивидуальный подход к каждому клиенту, гибкую систему скидок и быструю доставку.
+      </p>
+  138         </div>
+  139     </section>
+  140
+  141     <!-- Footer -->
+  142     <footer>
+  143         <div class="container">
+  144             <div class="footer-content">
+  145                 <div class="footer-info">
+  146                     <h3>МАТРЁШКА</h3>
+  147                     <p>г. Чита, ул. Бутина 44, помещение 1</p>
+  148                     <p>Телефон: +79143592767</p>
+  149                     <p>Режим работы: пн-пт 9:00-18:00, сб 10:00-16:00</p>
+  148                     <p>Телефон: +79143592767</p>
+  149                     <p>Режим работы: пн-пт 9:00-18:00, сб 10:00-16:00</p>
+  150                 </div>
+  151                 <div class="footer-links">
+  152                     <h3>Разделы</h3>
+  153                     <ul>
+  154                         <li><a href="index.html">Главная</a></li>
+  155                         <li><a href="catalog.html">Каталог</a></li>
+  156                         <li><a href="about.html">О нас</a></li>
+  157                         <li><a href="delivery.html">Доставка и оплата</a></li>
+  158                         <li><a href="returns.html">Возврат и обмен</a></li>
+  159                         <li><a href="faq.html">FAQ</a></li>
+  160                     </ul>
+  161                 </div>
+  162                 <div class="footer-links">
+  163                     <h3>Полезное</h3>
+  164                     <ul>
+  165                         <li><a href="blog.html">Блог</a></li>
+  166                         <li><a href="account.html">Личный кабинет</a></li>
+  167                         <li><a href="cart.html">Корзина</a></li>
+  168                     </ul>
+  169                 </div>
+  170                 <div class="footer-social">
+  171                     <h3>Мы в соцсетях</h3>
+  172                     <div class="social-icons">
+  173                         <a href="#"><i class="fab fa-vk"></i></a>
+  174                         <a href="#"><i class="fab fa-instagram"></i></a>
+  175                         <a href="#"><i class="fab fa-telegram"></i></a>
+  176                     </div>
+  177                 </div>
+  178             </div>
+  179             <div class="footer-bottom">
+  180                 <p>&copy; 2026 МАТРЁШКА. Все права защищены.</p>
+  181             </div>
+  182         </div>
+  183     </footer>
+  184
+  185     <script src="assets/js/main.js"></script>
+  186     <script src="assets/js/auth.js"></script>
+  187     <script src="assets/js/cart.js"></script>
+  188     <script src="assets/js/products.js"></script>
+  189     <script src="assets/js/admin.js"></script>
+  190 </body>
+  191 </html>
