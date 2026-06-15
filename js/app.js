@@ -1,13 +1,3 @@
-console.log('✅ app.js начал загрузку');
-alert('app.js загружен!');
-
-// Проверка, что STORE_DATA существует
-if (typeof STORE_DATA !== 'undefined') {
-    console.log('✅ STORE_DATA загружен, товаров:', STORE_DATA.products.length);
-} else {
-    console.error('❌ STORE_DATA не загружен!');
-}
-
 // ===== STORE DATA =====
 const STORE_DATA = {
     products: [
@@ -677,4 +667,36 @@ loadState();
         if (!localStorage.getItem('matreshka_logo')) localStorage.setItem('matreshka_logo', 'https://s3.radikal.cloud/2026/06/12/i-171370a0c13fcb6db.webp');
         console.log('🪡 МАТРЁШКА загружена, товаров:', STORE_DATA.products.length);
     });
+// ТЕСТОВАЯ ФУНКЦИЯ ДЛЯ ПРОВЕРКИ
+window.testAddProduct = function() {
+    console.log('🛠 testAddProduct вызвана');
+    
+    const testProduct = {
+        id: 'test_' + Date.now(),
+        name: 'ТЕСТОВЫЙ ТОВАР',
+        category: 'tkani',
+        categoryName: 'Ткани',
+        price: 999,
+        unit: 'шт',
+        desc: 'Это тестовый товар, созданный принудительно',
+        image: '🧪',
+        composition: 'Тест',
+        width: '100 см',
+        stock: 10,
+        inStock: true,
+        isNew: true,
+        isPopular: false
+    };
+    
+    STORE_DATA.products.push(testProduct);
+    console.log('✅ Товар добавлен в STORE_DATA, всего товаров:', STORE_DATA.products.length);
+    
+    saveCustomProducts();
+    renderCatalog();
+    renderPopularProducts();
+    renderAdminProducts();
+    
+    alert('✅ Тестовый товар добавлен! Проверьте каталог или админ-панель.');
+};
+    
 })();
