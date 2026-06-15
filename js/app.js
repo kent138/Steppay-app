@@ -687,16 +687,4 @@ window.testAddProduct = function() {
         isNew: true,
         isPopular: false
     };
-    
-    STORE_DATA.products.push(testProduct);
-    console.log('✅ Товар добавлен в STORE_DATA, всего товаров:', STORE_DATA.products.length);
-    
-    saveCustomProducts();
-    renderCatalog();
-    renderPopularProducts();
-    renderAdminProducts();
-    
-    alert('✅ Тестовый товар добавлен! Проверьте каталог или админ-панель.');
-};
-    
 })();
